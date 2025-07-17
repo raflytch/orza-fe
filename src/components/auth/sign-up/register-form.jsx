@@ -18,6 +18,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 import { images } from "@/constants/images";
 import Image from "next/image";
+import { useRegister } from "@/hooks/use-auth";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -27,11 +28,12 @@ const registerSchema = z.object({
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const registerMutation = useRegister();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -42,7 +44,7 @@ export default function RegisterForm() {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
+    registerMutation.mutate(data);
   };
 
   return (
@@ -148,9 +150,9 @@ export default function RegisterForm() {
           <Button
             type="submit"
             className="w-full h-10 text-sm md:text-base bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
-            disabled={isSubmitting}
+            disabled={registerMutation.isPending}
           >
-            {isSubmitting ? (
+            {registerMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Memproses...

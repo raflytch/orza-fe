@@ -1,4 +1,5 @@
 import QueryProvider from "@/providers/query-provider";
+import ReduxProvider from "@/providers/redux-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
@@ -9,10 +10,12 @@ export const metadata = {
 export default function AuthLayout({ children }) {
   return (
     <div className="bg-white min-h-screen">
-      <QueryProvider>
-        {children}
-        <Toaster />
-      </QueryProvider>
+      <ReduxProvider>
+        <QueryProvider>
+          {children}
+          <Toaster />
+        </QueryProvider>
+      </ReduxProvider>
     </div>
   );
 }
