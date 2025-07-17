@@ -36,11 +36,6 @@ export default function RegisterForm() {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: "raflygamers65@gmail.com",
-      password: "password",
-      name: "Rafly Aziz Abdillah",
-    },
   });
 
   const onSubmit = (data) => {

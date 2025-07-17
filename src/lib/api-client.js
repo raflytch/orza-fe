@@ -28,7 +28,6 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       deleteCookie("token");
-      window.location.href = "/sign-in";
     }
     return Promise.reject(error);
   }
