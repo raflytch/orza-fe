@@ -185,13 +185,15 @@ export default function PredictionForm() {
               onDrop={handleDrop}
             >
               {imagePreview ? (
-                <div className="relative">
-                  <div className="relative mx-auto w-80 h-80 rounded-lg overflow-hidden">
+                <div className="relative flex flex-col items-center">
+                  <div className="relative mx-auto w-full max-w-xs aspect-square rounded-lg overflow-hidden">
                     <Image
                       src={imagePreview}
                       alt="Preview"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 640px) 90vw, 320px"
+                      style={{ objectFit: "cover" }}
                     />
                   </div>
                   <Button
@@ -203,7 +205,7 @@ export default function PredictionForm() {
                   >
                     <X className="h-4 w-4" />
                   </Button>
-                  <div className="mt-4 text-sm text-gray-600">
+                  <div className="mt-4 text-sm text-gray-600 text-center">
                     Klik tombol di atas untuk mengganti gambar
                   </div>
                 </div>
