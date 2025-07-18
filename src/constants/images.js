@@ -4,6 +4,7 @@ import imageHero3 from "../../public/images/image-hero-3.webp";
 import imageHero4 from "../../public/images/image-hero-4.webp";
 import googleIcon from "../../public/images/google-icon.webp";
 import orzaLogo from "../../public/images/orza-logo.png";
+import bannerComunity from "../../public/images/banner-comunity.jpg";
 
 export const images = {
   imageHero,
@@ -12,4 +13,5 @@ export const images = {
   imageHero4,
   googleIcon,
   orzaLogo,
+  bannerComunity,
 };
