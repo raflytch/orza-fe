@@ -24,6 +24,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Typewriter from "@/components/ui/typewriter";
+import ProductSuggestions from "./product-suggestions";
 
 function PredictionDetailSkeleton() {
   return (
@@ -300,6 +301,11 @@ export default function PredictionDetail({ predictionId }) {
           </div>
         </CardContent>
       </Card>
+
+      <ProductSuggestions
+        cropType={prediction.cropType}
+        disease={prediction.disease}
+      />
 
       {prediction.user && (
         <Card>

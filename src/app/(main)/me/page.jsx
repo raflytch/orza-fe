@@ -274,7 +274,7 @@ export default function ProfilePage() {
                     Pengaturan
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                   <DialogHeader>
                     <DialogTitle>Pengaturan Profil</DialogTitle>
                   </DialogHeader>
@@ -626,7 +626,7 @@ export default function ProfilePage() {
         </BlurFade>
 
         <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
             <DialogHeader>
               <DialogTitle>Konfirmasi Hapus Akun</DialogTitle>
             </DialogHeader>
