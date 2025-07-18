@@ -1,7 +1,6 @@
 import Navbar from "@/components/navbar";
 import QueryProvider from "@/providers/query-provider";
 import ReduxProvider from "@/providers/redux-provider";
-import { Toaster } from "@/components/ui/sonner";
 
 export default function MainLayout({ children }) {
   return (
@@ -15,7 +14,6 @@ export default function MainLayout({ children }) {
           <QueryProvider>
             <Navbar />
             {children}
-            <Toaster />
           </QueryProvider>
         </ReduxProvider>
       </div>
