@@ -8,7 +8,6 @@ import {
   FaBookOpen,
   FaBars,
   FaTimes,
-  FaBell,
   FaSignOutAlt,
   FaUser,
 } from "react-icons/fa";
@@ -46,7 +45,7 @@ export default function Navbar() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [token, setToken] = useState(null);
   const { data: profile } = useProfile();
-  const logout = useLogout();
+  const { logout } = useLogout();
   const unreadCount = useUnreadCount();
 
   useEffect(() => {
