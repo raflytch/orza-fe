@@ -187,11 +187,12 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="px-3 py-2">
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
-                    {profile.data.name}
-                  </div>
-                </div>
+                <Link href="/me">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FaUser className="mr-2 h-4 w-4" />
+                    Profil Saya
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <AlertDialog
                   open={showLogoutDialog}
@@ -295,7 +296,11 @@ export default function Navbar() {
 
               {token && profile?.data ? (
                 <>
-                  <div className="flex items-center gap-3 px-4 py-3">
+                  <Link
+                    href="/me"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-green-50 rounded-xl transition-colors"
+                    onClick={() => setOpen(false)}
+                  >
                     {profile.data.avatarUrl ? (
                       <Image
                         src={profile.data.avatarUrl}
@@ -313,8 +318,9 @@ export default function Navbar() {
                       <div className="font-medium text-gray-900 dark:text-gray-100">
                         {profile.data.name}
                       </div>
+                      <div className="text-sm text-gray-600">Lihat profil</div>
                     </div>
-                  </div>
+                  </Link>
                   <AlertDialog
                     open={showLogoutDialog}
                     onOpenChange={setShowLogoutDialog}
