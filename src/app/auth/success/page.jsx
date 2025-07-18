@@ -21,7 +21,7 @@ function AuthSuccessContent() {
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       });
 
       setTimeout(() => {

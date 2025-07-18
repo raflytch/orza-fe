@@ -24,7 +24,7 @@ export const useLogin = () => {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "lax",
         });
 
         toast.success("Login berhasil!");
@@ -53,7 +53,7 @@ export const useRegister = () => {
           maxAge: 60 * 10,
           path: "/",
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "lax",
         });
 
         dispatch(registerSuccess({ email: variables.email }));
@@ -84,7 +84,7 @@ export const useVerifyOtp = () => {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "lax",
         });
 
         deleteCookie("email");
