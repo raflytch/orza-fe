@@ -23,11 +23,8 @@ function AuthSuccessContent() {
         sameSite: "strict",
       });
 
-      window.dispatchEvent(new Event("storage"));
-
       setTimeout(() => {
         router.push("/");
-        window.location.reload();
       }, 2000);
     } else {
       setTimeout(() => {
