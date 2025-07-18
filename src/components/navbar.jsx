@@ -15,7 +15,7 @@ import {
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useLogout } from "@/hooks/use-auth";
-import Cookies from "js-cookie";
+import { getCookie } from "cookies-next";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,13 +50,13 @@ export default function Navbar() {
   const unreadCount = useUnreadCount();
 
   useEffect(() => {
-    const currentToken = Cookies.get("token");
+    const currentToken = getCookie("token");
     setToken(currentToken);
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentToken = Cookies.get("token");
+      const currentToken = getCookie("token");
       setToken(currentToken);
     }, 1000);
 
