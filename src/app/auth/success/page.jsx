@@ -2,7 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
+import { setCookie } from "cookies-next/client";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { FaLeaf } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -23,8 +23,11 @@ function AuthSuccessContent() {
         sameSite: "strict",
       });
 
+      window.dispatchEvent(new Event("storage"));
+
       setTimeout(() => {
         router.push("/");
+        window.location.reload();
       }, 2000);
     } else {
       setTimeout(() => {

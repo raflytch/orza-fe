@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { setCookie, deleteCookie, getCookie } from "cookies-next";
+import { setCookie, deleteCookie, getCookie } from "cookies-next/client";
 import { authService } from "@/services/auth.service";
 import {
   registerStart,

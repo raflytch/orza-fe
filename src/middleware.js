@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
@@ -27,6 +26,10 @@ export function middleware(request) {
     if (token) {
       return NextResponse.redirect(new URL("/", request.url));
     }
+  }
+
+  if (pathname.startsWith("/auth/success")) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();

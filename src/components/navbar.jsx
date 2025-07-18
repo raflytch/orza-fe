@@ -14,7 +14,7 @@ import {
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useLogout } from "@/hooks/use-auth";
-import { getCookie, deleteCookie } from "cookies-next/client";
+import { getCookie } from "cookies-next/client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,30 +37,40 @@ import {
 } from "@/components/ui/alert-dialog";
 import { images } from "@/constants/images";
 import NotificationPanel from "@/components/notification-panel";
-import { useUnreadCount } from "@/hooks/use-notification";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [token, setToken] = useState(null);
-  const { data: profile } = useProfile();
+  const { data: profile, refetch: refetchProfile } = useProfile();
   const { mutate: logout } = useLogout();
-  const unreadCount = useUnreadCount();
 
   useEffect(() => {
     const currentToken = getCookie("token");
     setToken(currentToken);
-  }, []);
+    if (currentToken && !profile) {
+      refetchProfile();
+    }
+  }, [profile, refetchProfile]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const handleStorageChange = () => {
       const currentToken = getCookie("token");
       setToken(currentToken);
-    }, 1000);
+      if (currentToken && !profile) {
+        refetchProfile();
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, []);
+    window.addEventListener("storage", handleStorageChange);
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [profile, refetchProfile]);
 
   if (pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/otp")
     return null;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie, setCookie, deleteCookie } from "cookies-next";
+import { getCookie } from "cookies-next/client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URI;
 
