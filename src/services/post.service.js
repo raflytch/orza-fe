@@ -56,6 +56,12 @@ export const postService = {
     });
     return response.data;
   },
+  
+  // Get like count for a post
+  getLikeCount: async (postId) => {
+    const response = await apiClient.get(`/likes/count?postId=${postId}`);
+    return response.data;
+  },
 
   // Add comment
   addComment: async (postId, content) => {

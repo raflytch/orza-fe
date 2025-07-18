@@ -24,6 +24,17 @@ export const useGetPostById = (postId) => {
   });
 };
 
+// Get like count for a post
+export const useGetLikeCount = (postId) => {
+  return useQuery({
+    queryKey: ["likeCount", postId],
+    queryFn: () => postService.getLikeCount(postId),
+    enabled: !!postId,
+    staleTime: 30 * 1000, // Refresh lebih sering (30 detik)
+    refetchOnWindowFocus: true,
+  });
+};
+
 // Create post
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
@@ -101,11 +112,8 @@ export const useLikePost = () => {
   return useMutation({
     mutationFn: (postId) => postService.likePost(postId),
     onSuccess: (data, postId) => {
-      // Tidak perlu toast untuk like
-      // Langsung update cache
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
-      
-      // Update cache komunitas juga
+      queryClient.invalidateQueries({ queryKey: ["likeCount", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
@@ -121,11 +129,8 @@ export const useUnlikePost = () => {
   return useMutation({
     mutationFn: (postId) => postService.unlikePost(postId),
     onSuccess: (data, postId) => {
-      // Tidak perlu toast untuk unlike
-      // Langsung update cache
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
-      
-      // Update cache komunitas juga
+      queryClient.invalidateQueries({ queryKey: ["likeCount", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
@@ -141,7 +146,6 @@ export const useAddComment = () => {
   return useMutation({
     mutationFn: ({ postId, content }) => postService.addComment(postId, content),
     onSuccess: (data, { postId }) => {
-      // toast.success("Komentar berhasil ditambahkan");
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
     },
@@ -158,8 +162,6 @@ export const useUpdateComment = () => {
   return useMutation({
     mutationFn: ({ commentId, content }) => postService.updateComment(commentId, content),
     onSuccess: (data, variables) => {
-      // toast.success("Komentar berhasil diperbarui");
-      // Perlu mendapatkan postId dari comment response
       if (data?.data?.postId) {
         queryClient.invalidateQueries({ queryKey: ["comments", data.data.postId] });
         queryClient.invalidateQueries({ queryKey: ["post", data.data.postId] });
@@ -181,8 +183,6 @@ export const useDeleteComment = () => {
   return useMutation({
     mutationFn: (commentId) => postService.deleteComment(commentId),
     onSuccess: (data) => {
-      // toast.success("Komentar berhasil dihapus");
-      // Perlu mendapatkan postId dari comment response
       if (data?.data?.postId) {
         queryClient.invalidateQueries({ queryKey: ["comments", data.data.postId] });
         queryClient.invalidateQueries({ queryKey: ["post", data.data.postId] });

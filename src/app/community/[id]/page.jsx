@@ -225,55 +225,20 @@ export default function CommunityDetailPage() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                    {!isOwner && profile?.data && (
-                      <>
-                        {isMember ? (
-                          <Button 
-                            variant="outline"
-                            onClick={handleLeave}
-                            disabled={leaveMutation.isPending}
-                            className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-                          >
-                            {leaveMutation.isPending ? (
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            ) : (
-                              <UserMinus className="w-4 h-4 mr-2" />
-                            )}
-                            Keluar dari Komunitas
-                          </Button>
-                        ) : (
-                          <Button 
-                            onClick={handleJoin}
-                            disabled={joinMutation.isPending}
-                            className="bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg transition-all duration-200"
-                          >
-                            {joinMutation.isPending ? (
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            ) : (
-                              <UserPlus className="w-4 h-4 mr-2" />
-                            )}
-                            Bergabung
-                          </Button>
-                        )}
-                      </>
-                    )}
-
-                    {!profile?.data && (
+                    {!isOwner && profile?.data && !isMember && (
                       <Button 
-                        onClick={() => window.location.href = '/sign-in'}
+                        onClick={handleJoin}
+                        disabled={joinMutation.isPending}
                         className="bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg transition-all duration-200"
                       >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Login untuk Bergabung
+                        {joinMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <UserPlus className="w-4 h-4 mr-2" />
+                        )}
+                        Bergabung
                       </Button>
                     )}
-                    
-                    {/* Additional Info Badge for Mobile */}
-                    <div className="flex sm:hidden justify-center mt-2">
-                      <Badge variant="secondary" className="bg-green-50 text-green-700 border border-green-200">
-                        {isMember ? "Anggota" : isOwner ? "Owner" : "Pengunjung"}
-                      </Badge>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -383,16 +348,6 @@ export default function CommunityDetailPage() {
 
                       {/* Post Stats */}
                       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <div className="flex items-center gap-6 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Heart className="w-4 h-4" />
-                            <span>{post.likesCount || 0}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4" />
-                            <span>{post.commentsCount || 0} comments</span>
-                          </div>
-                        </div>
                         <Link href={`/community/${params.id}/${post.id}`}>
                           <Button variant="outline" size="sm" className="text-xs">
                             Baca Selengkapnya

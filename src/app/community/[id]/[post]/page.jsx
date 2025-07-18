@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useGetPostById, useDeletePost, useAddComment, useGetCommentsByPost } from "@/hooks/use-post";
+import { useGetPostById, useDeletePost, useAddComment, useGetCommentsByPost, useLikePost, useUnlikePost, useGetLikeCount } from "@/hooks/use-post";
 import { useGetCommunityById } from "@/hooks/use-community";
 import { useProfile } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -42,15 +42,27 @@ export default function CommunityPostPage() {
   const [commentText, setCommentText] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
-  const { data: post, isLoading: isLoadingPost, error: postError } = useGetPostById(params.post);
+  const { data: post, isLoading: isLoadingPost, error: postError, refetch: refetchPost } = useGetPostById(params.post);
   const { data: community } = useGetCommunityById(params.id);
-  const { data: comments, isLoading: isLoadingComments } = useGetCommentsByPost(params.post);
+  const { data: comments, isLoading: isLoadingComments, refetch: refetchComments } = useGetCommentsByPost(params.post);
+  const { data: likeCount, isLoading: isLoadingLikeCount, refetch: refetchLikeCount } = useGetLikeCount(params.post);
   const { data: profile } = useProfile();
   
   const deletePostMutation = useDeletePost();
   const addCommentMutation = useAddComment();
+  const likePostMutation = useLikePost();
+  const unlikePostMutation = useUnlikePost();
 
-  if (isLoadingPost) {
+  // Refetch data when component mounts
+  useEffect(() => {
+    if (params.post) {
+      refetchPost();
+      refetchComments();
+      refetchLikeCount();
+    }
+  }, [params.post, refetchPost, refetchComments, refetchLikeCount]);
+
+  if (isLoadingPost || isLoadingLikeCount) {
     return (
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -63,7 +75,7 @@ export default function CommunityPostPage() {
     );
   }
 
-  if (postError || !post) {
+  if (postError || !post || !likeCount) {
     return (
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -87,12 +99,39 @@ export default function CommunityPostPage() {
   const postData = post.data;
   const commentsData = comments?.data?.comments || [];
   const communityData = community?.data;
+  const likeData = likeCount.data;
   
   const isOwner = profile?.data?.id === postData.userId;
+  // Menggunakan data dari endpoint /likes/count untuk status like
+  const isLiked = likeData?.liked || false;
+  const likeTotal = likeData?.total || 0;
+  const commentCount = commentsData.length;
   
   const handleDeletePost = () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus postingan ini?')) {
       deletePostMutation.mutate(postData.id);
+    }
+  };
+  
+  const handleLikeToggle = () => {
+    if (!profile?.data) {
+      // Redirect to login if not logged in
+      router.push('/sign-in');
+      return;
+    }
+    
+    if (isLiked) {
+      unlikePostMutation.mutate(postData.id, {
+        onSuccess: () => {
+          refetchLikeCount();
+        }
+      });
+    } else {
+      likePostMutation.mutate(postData.id, {
+        onSuccess: () => {
+          refetchLikeCount();
+        }
+      });
     }
   };
   
@@ -105,6 +144,8 @@ export default function CommunityPostPage() {
       {
         onSuccess: () => {
           setCommentText("");
+          refetchComments();
+          refetchPost();
         }
       }
     );
@@ -151,12 +192,15 @@ export default function CommunityPostPage() {
                   <span>{new Date(postData.createdAt).toLocaleDateString('id-ID')}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Heart className="w-4 h-4" />
-                  <span>{postData.likesCount || 0} suka</span>
+                  <Heart 
+                    className={`w-4 h-4 ${isLiked ? 'text-red-500' : ''}`}
+                    fill={isLiked ? "currentColor" : "none"}
+                  />
+                  <span>{likeTotal} suka</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MessageCircle className="w-4 h-4" />
-                  <span>{postData.commentsCount || 0} komentar</span>
+                  <span>{commentCount} komentar</span>
                 </div>
               </div>
             </div>
@@ -222,13 +266,28 @@ export default function CommunityPostPage() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-4 pt-4 border-t">
-            <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-              <Heart className="w-4 h-4 mr-2" />
-              Suka ({postData.likesCount || 0})
+            <Button 
+              variant="ghost" 
+              className={`${isLiked ? 'text-red-500 hover:text-red-600 hover:bg-red-50' : 'text-gray-500 hover:text-red-500 hover:bg-red-50'}`}
+              onClick={handleLikeToggle}
+              disabled={likePostMutation.isPending || unlikePostMutation.isPending}
+            >
+              {likePostMutation.isPending || unlikePostMutation.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Heart 
+                  className="w-4 h-4 mr-2"
+                  fill={isLiked ? "currentColor" : "none"}
+                />
+              )}
+              Suka ({likeTotal})
             </Button>
-            <Button variant="ghost" className="text-blue-500 hover:text-blue-600 hover:bg-blue-50">
+            <Button 
+              variant="ghost" 
+              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+            >
               <MessageCircle className="w-4 h-4 mr-2" />
-              Komentar ({postData.commentsCount || 0})
+              Komentar ({commentCount})
             </Button>
           </div>
         </CardContent>
@@ -238,7 +297,7 @@ export default function CommunityPostPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            Komentar ({postData.commentsCount || 0})
+            Komentar ({commentCount})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -312,7 +371,10 @@ export default function CommunityPostPage() {
                       </p>
                       <div className="flex items-center gap-3">
                         <Button variant="ghost" size="sm" className="text-xs text-gray-500 hover:text-red-500 p-0 h-auto">
-                          <Heart className="w-3 h-3 mr-1" />
+                          <Heart 
+                            className={`w-3 h-3 mr-1 ${comment.isLiked ? 'text-red-500' : ''}`}
+                            fill={comment.isLiked ? "currentColor" : "none"}
+                          />
                           {comment.likesCount || 0}
                         </Button>
                       </div>
