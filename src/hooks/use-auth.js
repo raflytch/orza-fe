@@ -149,7 +149,8 @@ export const useResendOtp = () => {
       toast.success(data.message || "OTP berhasil dikirim ulang");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || "Gagal mengirim ulang OTP";
+      const errorMessage =
+        error.response?.data?.message || "Gagal mengirim ulang OTP";
       toast.error(errorMessage);
     },
   });
@@ -170,7 +171,8 @@ export const useForgotPassword = () => {
       router.push("/reset-password");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || "Gagal mengirim link reset password";
+      const errorMessage =
+        error.response?.data?.message || "Gagal mengirim link reset password";
       toast.error(errorMessage);
     },
   });
@@ -187,7 +189,8 @@ export const useResetPassword = () => {
       router.push("/sign-in");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || "Gagal reset password";
+      const errorMessage =
+        error.response?.data?.message || "Gagal reset password";
       toast.error(errorMessage);
     },
   });
@@ -200,7 +203,8 @@ export const useChangePassword = () => {
       toast.success(data.message || "Password berhasil diubah");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || "Gagal mengubah password";
+      const errorMessage =
+        error.response?.data?.message || "Gagal mengubah password";
       toast.error(errorMessage);
     },
   });
@@ -216,7 +220,8 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || "Gagal memperbarui profil";
+      const errorMessage =
+        error.response?.data?.message || "Gagal memperbarui profil";
       toast.error(errorMessage);
     },
   });

@@ -14,7 +14,7 @@ import {
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useLogout } from "@/hooks/use-auth";
-import { getCookie } from "cookies-next";
+import { getCookie, deleteCookie } from "cookies-next";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,7 +45,7 @@ export default function Navbar() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [token, setToken] = useState(null);
   const { data: profile } = useProfile();
-  const { logout } = useLogout();
+  const { mutate: logout } = useLogout();
   const unreadCount = useUnreadCount();
 
   useEffect(() => {
@@ -66,10 +66,13 @@ export default function Navbar() {
     return null;
 
   const handleLogout = () => {
-    logout();
-    setShowLogoutDialog(false);
-    setOpen(false);
-    setToken(null);
+    logout(undefined, {
+      onSuccess: () => {
+        setShowLogoutDialog(false);
+        setOpen(false);
+        setToken(null);
+      },
+    });
   };
 
   return (
