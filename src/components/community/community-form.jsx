@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,7 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Upload, X } from "lucide-react";
+import {
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Loader2, Upload, X, Camera, FileImage } from "lucide-react";
 import { useCreateCommunity, useUpdateCommunity } from "@/hooks/use-community";
 import Image from "next/image";
 
@@ -25,13 +29,15 @@ const communitySchema = z.object({
 });
 
 export default function CommunityForm({ community = null, onCancel }) {
-  const [imagePreview, setImagePreview] = useState(community?.imageUrl || null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
+  const isEditing = !!community;
+  
   const createMutation = useCreateCommunity();
   const updateMutation = useUpdateCommunity();
-
-  const isEditing = !!community;
+  const isLoading = createMutation.isPending || updateMutation.isPending;
 
   const {
     register,
@@ -47,80 +53,103 @@ export default function CommunityForm({ community = null, onCancel }) {
     },
   });
 
-  // Update form when community prop changes
   useEffect(() => {
-    if (community) {
+    if (community && isEditing) {
       reset({
         name: community.name,
         description: community.description,
       });
-      setImagePreview(community.imageUrl);
+      if (community.imageUrl) {
+        setImagePreview(community.imageUrl);
+      }
     }
-  }, [community, reset]);
+  }, [community, isEditing, reset]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (file) => {
     if (file) {
       setImageFile(file);
-      setValue("image", file);
-      
+      setValue("image", file, { shouldValidate: true });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onload = (e) => setImagePreview(e.target.result);
       reader.readAsDataURL(file);
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    if (!isEditing) {
-      setImagePreview(null);
-    } else {
-      setImagePreview(community?.imageUrl || null);
+  const handleFileInput = (e) => {
+    const file = e.target.files[0];
+    handleImageChange(file);
+    e.target.value = "";
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
     }
-    setValue("image", null);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageChange(e.dataTransfer.files[0]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const removeImage = () => {
+    setValue("image", null, { shouldValidate: true });
+    setImagePreview(isEditing ? community?.imageUrl : null);
+    setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const onSubmit = (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
     if (isEditing) {
-      // For update, only send name and description
-      updateMutation.mutate({
-        id: community.id,
-        data: {
-          name: data.name,
-          description: data.description,
-        },
-      }, {
-        onSuccess: () => {
-          if (onCancel) onCancel();
-        },
-      });
+      updateMutation.mutate(
+        { id: community.id, data: formData },
+        {
+          onSuccess: () => {
+            onCancel?.();
+          },
+        }
+      );
     } else {
-      // For create, send FormData with image
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
-      
       createMutation.mutate(formData, {
         onSuccess: () => {
-          if (onCancel) onCancel();
+          reset();
+          setImagePreview(null);
+          setImageFile(null);
+          onCancel?.();
         },
       });
     }
   };
 
-  const isLoading = createMutation.isPending || updateMutation.isPending;
-
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="border-0 shadow-none">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-green-600">
-          {isEditing ? "Edit Komunitas" : "Buat Komunitas Baru"}
-        </CardTitle>
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold">
+            {isEditing ? "Edit Komunitas" : "Buat Komunitas Baru"}
+          </DialogTitle>
+        </DialogHeader>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -151,62 +180,94 @@ export default function CommunityForm({ community = null, onCancel }) {
             )}
           </div>
 
-          {!isEditing && (
-            <div className="space-y-2">
-              <Label htmlFor="image">Gambar Komunitas</Label>
-              <div className="flex flex-col gap-4">
-                {imagePreview ? (
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-dashed border-gray-300">
+          <div className="space-y-2">
+            <Label htmlFor="image">Gambar Komunitas</Label>
+            <div
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
+                dragActive
+                  ? "border-green-500 bg-green-50 scale-105"
+                  : "border-gray-300 hover:border-green-400 hover:bg-green-50"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              {imagePreview ? (
+                <div className="relative flex flex-col items-center">
+                  <div className="relative mx-auto w-full max-w-xs aspect-square rounded-lg overflow-hidden">
                     <Image
                       src={imagePreview}
                       alt="Preview"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 640px) 90vw, 320px"
+                      style={{ objectFit: "cover" }}
                     />
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <X size={16} />
-                    </button>
                   </div>
-                ) : (
-                  <div className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition-colors">
-                    <input
-                      id="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                    <label htmlFor="image" className="cursor-pointer flex flex-col items-center">
-                      <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                      <p className="text-gray-500">Klik untuk upload gambar</p>
-                    </label>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2 rounded-full w-8 h-8 p-0"
+                    onClick={removeImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                  <div className="mt-4 text-sm text-gray-600 text-center">
+                    {isEditing ? "Klik tombol di atas untuk mengganti gambar" : "Klik tombol di atas untuk mengganti gambar"}
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center">
+                    <div className="p-4 bg-green-100 rounded-full">
+                      <Camera className="h-8 w-8 text-green-600" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-lg font-medium text-gray-700">
+                      Drag & drop gambar di sini
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      atau klik tombol di bawah untuk memilih file
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <FileImage className="h-4 w-4" />
+                    <span>Mendukung: PNG, JPG, JPEG (max 5MB)</span>
+                  </div>
+                </div>
+              )}
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileInput}
+                className="hidden"
+                ref={fileInputRef}
+              />
+              {!imagePreview && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-4 border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+                  onClick={() =>
+                    fileInputRef.current && fileInputRef.current.click()
+                  }
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Pilih Gambar
+                </Button>
+              )}
             </div>
-          )}
-
-          {isEditing && imagePreview && (
-            <div className="space-y-2">
-              <Label>Gambar Saat Ini</Label>
-              <div className="w-full h-48 rounded-lg overflow-hidden border">
-                <Image
-                  src={imagePreview}
-                  alt="Current image"
-                  width={400}
-                  height={200}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <p className="text-sm text-gray-500">
-                Gambar tidak dapat diubah saat edit. Hapus dan buat ulang komunitas untuk mengubah gambar.
+            {errors.image && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <X className="h-3 w-3" />
+                {errors.image.message}
               </p>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="flex gap-4">
             <Button

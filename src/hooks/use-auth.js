@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { authService } from "@/services/auth.service";
-import { setCookie, deleteCookie, getCookie } from "cookies-next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { setCookie, deleteCookie, getCookie } from "cookies-next";
+import { authService } from "@/services/auth.service";
 import {
   registerStart,
   registerSuccess,
@@ -11,13 +11,18 @@ import {
   verifyOtpStart,
   verifyOtpSuccess,
   verifyOtpFailure,
+  clearError,
 } from "@/features/slices/auth-slice";
 
 export const useLogin = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   return useMutation({
     mutationFn: authService.login,
+    onMutate: () => {
+      dispatch(clearError());
+    },
     onSuccess: (data) => {
       if (data.status === "success") {
         setCookie("token", data.data.token, {
@@ -26,7 +31,7 @@ export const useLogin = () => {
           sameSite: "strict",
         });
 
-        toast.success("Login berhasil!");
+        toast.success(data.message);
         router.push("/");
       }
     },
@@ -112,12 +117,107 @@ export const useProfile = () => {
   });
 };
 
+// Alias untuk useProfile agar konsisten dengan penamaan lain
+export const useGetProfile = () => {
+  return useProfile();
+};
+
 export const useLogout = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
-  return () => {
-    deleteCookie("token");
-    deleteCookie("email");
-    router.push("/sign-in");
-  };
+  return useMutation({
+    mutationFn: () => Promise.resolve(),
+    onSuccess: () => {
+      deleteCookie("token");
+      dispatch(clearError());
+      queryClient.clear();
+      toast.success("Berhasil logout");
+      router.push("/sign-in");
+    },
+    onError: (error) => {
+      toast.error("Gagal logout");
+    },
+  });
+};
+
+export const useResendOtp = () => {
+  return useMutation({
+    mutationFn: authService.resendOtp,
+    onSuccess: (data) => {
+      toast.success(data.message || "OTP berhasil dikirim ulang");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.message || "Gagal mengirim ulang OTP";
+      toast.error(errorMessage);
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: authService.forgotPassword,
+    onSuccess: (data, variables) => {
+      toast.success(data.message || "Link reset password berhasil dikirim");
+      setCookie("resetEmail", variables.email, {
+        maxAge: 60 * 30, // 30 minutes
+        path: "/",
+        sameSite: "strict",
+      });
+      router.push("/reset-password");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.message || "Gagal mengirim link reset password";
+      toast.error(errorMessage);
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: authService.resetPassword,
+    onSuccess: (data) => {
+      toast.success(data.message || "Password berhasil direset");
+      deleteCookie("resetEmail");
+      router.push("/sign-in");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.message || "Gagal reset password";
+      toast.error(errorMessage);
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: authService.changePassword,
+    onSuccess: (data) => {
+      toast.success(data.message || "Password berhasil diubah");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.message || "Gagal mengubah password";
+      toast.error(errorMessage);
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authService.updateProfile,
+    onSuccess: (data) => {
+      toast.success(data.message || "Profil berhasil diperbarui");
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.message || "Gagal memperbarui profil";
+      toast.error(errorMessage);
+    },
+  });
 };

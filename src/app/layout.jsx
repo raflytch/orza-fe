@@ -2,6 +2,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import QueryProvider from "@/providers/query-provider";
+import ReduxProvider from "@/providers/redux-provider";
 import { Toaster } from "sonner";
 
 const poppins = Poppins({
@@ -19,11 +20,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="id">
       <body className={poppins.className}>
-        <QueryProvider>
-          <Navbar />
-          {children}
-          <Toaster position="top-right" />
-        </QueryProvider>
+        <ReduxProvider>
+          <QueryProvider>
+            <Navbar />
+            {children}
+            <Toaster position="top-right" />
+          </QueryProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

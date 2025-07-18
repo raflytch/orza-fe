@@ -43,28 +43,48 @@ export const postService = {
 
   // Like post
   likePost: async (postId) => {
-    const response = await apiClient.post(`/posts/${postId}/like`);
+    const response = await apiClient.post("/likes/like", {
+      postId: postId,
+    });
     return response.data;
   },
 
   // Unlike post
   unlikePost: async (postId) => {
-    const response = await apiClient.delete(`/posts/${postId}/like`);
+    const response = await apiClient.post("/likes/unlike", {
+      postId: postId,
+    });
     return response.data;
   },
 
   // Add comment
   addComment: async (postId, content) => {
-    const response = await apiClient.post(`/posts/${postId}/comments`, {
+    const response = await apiClient.post("/comments", {
+      postId,
       content,
     });
     return response.data;
   },
 
+  // Update comment
+  updateComment: async (commentId, content) => {
+    const response = await apiClient.put(`/comments/${commentId}`, {
+      content,
+    });
+    return response.data;
+  },
+
+  // Delete comment
+  deleteComment: async (commentId) => {
+    const response = await apiClient.delete(`/comments/${commentId}`);
+    return response.data;
+  },
+
   // Get comments for post
   getCommentsByPost: async (postId, page = 1, limit = 10) => {
+    // Gunakan endpoint comments dengan filter postId
     const response = await apiClient.get(
-      `/posts/${postId}/comments?page=${page}&limit=${limit}`
+      `/comments?postId=${postId}&page=${page}&limit=${limit}`
     );
     return response.data;
   },

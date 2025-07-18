@@ -18,6 +18,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog";
 import { 
   Loader2, 
@@ -42,16 +43,14 @@ export default function CommunityPostPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
   const { data: post, isLoading: isLoadingPost, error: postError } = useGetPostById(params.post);
-  const { data: community, isLoading: isLoadingCommunity } = useGetCommunityById(params.id);
+  const { data: community } = useGetCommunityById(params.id);
   const { data: comments, isLoading: isLoadingComments } = useGetCommentsByPost(params.post);
   const { data: profile } = useProfile();
   
   const deletePostMutation = useDeletePost();
   const addCommentMutation = useAddComment();
 
-  const isLoading = isLoadingPost || isLoadingCommunity;
-  
-  if (isLoading) {
+  if (isLoadingPost) {
     return (
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -112,7 +111,7 @@ export default function CommunityPostPage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-4xl">
+    <main className="container mx-auto px-4 py-30 max-w-4xl">
       {/* Back Button */}
       <div className="mb-6">
         <Link href={`/community/${params.id}`}>
@@ -173,6 +172,7 @@ export default function CommunityPostPage() {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogTitle className="sr-only">Edit Postingan</DialogTitle>
                     <PostForm 
                       post={postData} 
                       onCancel={() => setIsEditDialogOpen(false)}
@@ -295,23 +295,23 @@ export default function CommunityPostPage() {
           ) : commentsData.length > 0 ? (
             <div className="space-y-4">
               {commentsData.map((comment) => (
-                <div key={comment.id} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                <div key={comment.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
                       <User className="w-4 h-4 text-gray-500" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-2">
                         <p className="font-medium text-sm">{comment.user?.name || "Pengguna"}</p>
                         <span className="text-xs text-gray-500">
                           {new Date(comment.createdAt).toLocaleDateString('id-ID')}
                         </span>
                       </div>
-                      <p className="text-gray-700 text-sm leading-relaxed">
+                      <p className="text-gray-700 text-sm leading-relaxed mb-2">
                         {comment.content}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Button variant="ghost" size="sm" className="text-xs text-gray-500 hover:text-red-500">
+                      <div className="flex items-center gap-3">
+                        <Button variant="ghost" size="sm" className="text-xs text-gray-500 hover:text-red-500 p-0 h-auto">
                           <Heart className="w-3 h-3 mr-1" />
                           {comment.likesCount || 0}
                         </Button>

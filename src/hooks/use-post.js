@@ -1,15 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { postService } from "@/services/post.service";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { postService } from "@/services/post.service";
 
-// Get all posts by community
+// Get posts by community
 export const useGetPostsByCommunity = (communityId, page = 1, limit = 10) => {
   return useQuery({
     queryKey: ["posts", communityId, page, limit],
     queryFn: () => postService.getPostsByCommunity(communityId, page, limit),
     enabled: !!communityId,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 1 * 60 * 1000, // Mengurangi stale time agar data lebih sering direfresh
   });
 };
 
@@ -19,6 +19,8 @@ export const useGetPostById = (postId) => {
     queryKey: ["post", postId],
     queryFn: () => postService.getPostById(postId),
     enabled: !!postId,
+    staleTime: 1 * 60 * 1000,
+    refetchOnWindowFocus: true, // Mengaktifkan refetch ketika window fokus kembali
   });
 };
 
@@ -31,11 +33,22 @@ export const useCreatePost = () => {
     mutationFn: postService.createPost,
     onSuccess: (data, variables) => {
       toast.success(data.message || "Postingan berhasil dibuat");
-      queryClient.invalidateQueries({ queryKey: ["posts", variables.get("communityId")] });
       
-      // Redirect to the new post (optional)
-      if (data.data?.id && variables.get("communityId")) {
-        router.push(`/community/${variables.get("communityId")}/${data.data.id}`);
+      // Extract communityId from FormData
+      let communityId;
+      if (variables instanceof FormData) {
+        communityId = variables.get("communityId");
+      }
+      
+      if (communityId) {
+        queryClient.invalidateQueries({ queryKey: ["posts", communityId] });
+        
+        // Redirect to the new post (optional)
+        if (data.data?.id) {
+          router.push(`/community/${communityId}/${data.data.id}`);
+        } else {
+          router.push(`/community/${communityId}`);
+        }
       }
     },
     onError: (error) => {
@@ -50,9 +63,9 @@ export const useUpdatePost = () => {
 
   return useMutation({
     mutationFn: ({ postId, data }) => postService.updatePost(postId, data),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       toast.success(data.message || "Postingan berhasil diperbarui");
-      queryClient.invalidateQueries({ queryKey: ["post"] });
+      queryClient.invalidateQueries({ queryKey: ["post", variables.postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
@@ -68,7 +81,7 @@ export const useDeletePost = () => {
 
   return useMutation({
     mutationFn: postService.deletePost,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data) => {
       toast.success(data.message || "Postingan berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       
@@ -86,13 +99,17 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: postService.likePost,
+    mutationFn: (postId) => postService.likePost(postId),
     onSuccess: (data, postId) => {
+      // Tidak perlu toast untuk like
+      // Langsung update cache
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      
+      // Update cache komunitas juga
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
-      toast.error("Gagal menyukai postingan");
+      toast.error(error.response?.data?.message || "Gagal menyukai postingan");
     },
   });
 };
@@ -102,13 +119,17 @@ export const useUnlikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: postService.unlikePost,
+    mutationFn: (postId) => postService.unlikePost(postId),
     onSuccess: (data, postId) => {
+      // Tidak perlu toast untuk unlike
+      // Langsung update cache
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      
+      // Update cache komunitas juga
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
-      toast.error("Gagal membatalkan suka pada postingan");
+      toast.error(error.response?.data?.message || "Gagal membatalkan suka pada postingan");
     },
   });
 };
@@ -120,12 +141,58 @@ export const useAddComment = () => {
   return useMutation({
     mutationFn: ({ postId, content }) => postService.addComment(postId, content),
     onSuccess: (data, { postId }) => {
-      toast.success("Komentar berhasil ditambahkan");
+      // toast.success("Komentar berhasil ditambahkan");
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Gagal menambahkan komentar");
+    },
+  });
+};
+
+// Update comment
+export const useUpdateComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ commentId, content }) => postService.updateComment(commentId, content),
+    onSuccess: (data, variables) => {
+      // toast.success("Komentar berhasil diperbarui");
+      // Perlu mendapatkan postId dari comment response
+      if (data?.data?.postId) {
+        queryClient.invalidateQueries({ queryKey: ["comments", data.data.postId] });
+        queryClient.invalidateQueries({ queryKey: ["post", data.data.postId] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({ queryKey: ["post"] });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Gagal memperbarui komentar");
+    },
+  });
+};
+
+// Delete comment
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId) => postService.deleteComment(commentId),
+    onSuccess: (data) => {
+      // toast.success("Komentar berhasil dihapus");
+      // Perlu mendapatkan postId dari comment response
+      if (data?.data?.postId) {
+        queryClient.invalidateQueries({ queryKey: ["comments", data.data.postId] });
+        queryClient.invalidateQueries({ queryKey: ["post", data.data.postId] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({ queryKey: ["post"] });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Gagal menghapus komentar");
     },
   });
 };
@@ -136,5 +203,7 @@ export const useGetCommentsByPost = (postId, page = 1, limit = 10) => {
     queryKey: ["comments", postId, page, limit],
     queryFn: () => postService.getCommentsByPost(postId, page, limit),
     enabled: !!postId,
+    staleTime: 1 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 };
