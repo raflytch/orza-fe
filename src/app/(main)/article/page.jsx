@@ -95,9 +95,11 @@ export default function ArticlePage() {
                   placeholder="Cari artikel..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 h-12 sm:h-14 bg-white/95 backdrop-blur-sm border-0 rounded-full text-sm sm:text-base shadow-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition-all duration-300"
+                  className="pl-14 h-12 sm:h-14 bg-white/95 backdrop-blur-sm border-0 rounded-full text-sm sm:text-base shadow-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition-all duration-300"
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                <span className="absolute left-8 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6">
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                </span>
               </div>
 
               {!token && (
@@ -146,7 +148,7 @@ export default function ArticlePage() {
                   >
                     <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Artikel Saya</span>
-                    <span className="sm:hidden">Artikel</span>
+                    <span className="sm:hidden">Artikel Saya</span>
                   </Button>
                 </Link>
               )}
@@ -163,10 +165,10 @@ export default function ArticlePage() {
                     >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       <span className="hidden sm:inline">Buat Artikel</span>
-                      <span className="sm:hidden">Buat</span>
+                      <span className="sm:hidden">Buat Artikel</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     <DialogTitle className="sr-only">
                       Buat Artikel Baru
                     </DialogTitle>
