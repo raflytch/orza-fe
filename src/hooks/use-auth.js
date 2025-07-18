@@ -22,6 +22,8 @@ export const useLogin = () => {
       if (data.status === "success") {
         setCookie("token", data.data.token, {
           maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+          sameSite: "strict",
         });
 
         toast.success("Login berhasil!");
@@ -48,6 +50,8 @@ export const useRegister = () => {
       if (data.status === "success") {
         setCookie("email", variables.email, {
           maxAge: 60 * 10,
+          path: "/",
+          sameSite: "strict",
         });
 
         dispatch(registerSuccess({ email: variables.email }));
@@ -76,6 +80,8 @@ export const useVerifyOtp = () => {
       if (data.status === "success") {
         setCookie("token", data.data.token, {
           maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+          sameSite: "strict",
         });
 
         deleteCookie("email");
