@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Search, Users, Calendar } from "lucide-react";
@@ -83,25 +84,22 @@ export default function CommunityPage() {
 
   return (
     <main className="w-full min-h-screen bg-gray-50">
-      {/* Hero Section - DEBUGGING VERSION */}
+      {/* Hero Section */}
       <section className="relative w-full h-screen flex flex-col">
-        {/* Background Image with debugging */}
-<div className="absolute inset-0">
-  <Image
-    src={images.bannerComunity}
-    alt="Banner Komunitas Petani"
-    fill
-    className="object-cover"
-    priority
-    quality={100}
-    sizes="100vw"
-  />
-  
-  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-</div>
-        
-        {/* Fallback background if image fails */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 -z-10"></div>
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src={images.bannerComunity}
+            alt="Banner Komunitas Petani"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+            sizes="100vw"
+          />
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        </div>
         
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 text-center">
@@ -133,7 +131,6 @@ export default function CommunityPage() {
         </div>
       </section>
 
-
       <div className="container mx-auto px-4 py-12">
         {/* Header with tabs and create button */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -157,6 +154,7 @@ export default function CommunityPage() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogTitle className="sr-only">Buat Komunitas Baru</DialogTitle>
               <CommunityForm onCancel={() => setIsCreateDialogOpen(false)} />
             </DialogContent>
           </Dialog>
@@ -186,6 +184,7 @@ export default function CommunityPage() {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogTitle className="sr-only">Buat Komunitas Pertama</DialogTitle>
                   <CommunityForm onCancel={() => setIsCreateDialogOpen(false)} />
                 </DialogContent>
               </Dialog>
