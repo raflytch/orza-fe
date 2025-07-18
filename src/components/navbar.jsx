@@ -25,6 +25,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { images } from "@/constants/images";
 import NotificationPanel from "@/components/notification-panel";
 import { useUnreadCount } from "@/hooks/use-notification";
@@ -32,6 +43,7 @@ import { useUnreadCount } from "@/hooks/use-notification";
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const token = getCookie("token");
   const { data: profile } = useProfile();
   const logout = useLogout();
@@ -42,6 +54,8 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setShowLogoutDialog(false);
+    setOpen(false);
   };
 
   return (
@@ -152,13 +166,41 @@ export default function Navbar() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="text-red-600 dark:text-red-400 cursor-pointer"
+                <AlertDialog
+                  open={showLogoutDialog}
+                  onOpenChange={setShowLogoutDialog}
                 >
-                  <FaSignOutAlt className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setShowLogoutDialog(true);
+                      }}
+                      className="text-red-600 dark:text-red-400 cursor-pointer"
+                    >
+                      <FaSignOutAlt className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Konfirmasi Logout</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Apakah Anda yakin ingin keluar dari akun Anda? Anda akan
+                        diarahkan ke halaman login.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleLogout}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Ya, Logout
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -246,17 +288,38 @@ export default function Navbar() {
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-3 font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors px-4 py-3 rounded-xl text-lg justify-start hover:bg-red-50 dark:hover:bg-red-900/20"
-                    onClick={() => {
-                      handleLogout();
-                      setOpen(false);
-                    }}
+                  <AlertDialog
+                    open={showLogoutDialog}
+                    onOpenChange={setShowLogoutDialog}
                   >
-                    <FaSignOutAlt className="text-red-500" />
-                    Logout
-                  </Button>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-3 font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors px-4 py-3 rounded-xl text-lg justify-start hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <FaSignOutAlt className="text-red-500" />
+                        Logout
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Konfirmasi Logout</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Apakah Anda yakin ingin keluar dari akun Anda? Anda
+                          akan diarahkan ke halaman login.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleLogout}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Ya, Logout
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </>
               ) : (
                 <div className="flex flex-col gap-3 px-4">

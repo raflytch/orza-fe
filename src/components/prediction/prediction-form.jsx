@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,6 +34,7 @@ const predictionSchema = z.object({
 export default function PredictionForm() {
   const [imagePreview, setImagePreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
   const { data: crops, isLoading: cropsLoading } = useCrops();
   const createPrediction = useCreatePrediction();
 
@@ -52,7 +53,7 @@ export default function PredictionForm() {
 
   const handleImageChange = (file) => {
     if (file) {
-      setValue("image", file);
+      setValue("image", file, { shouldValidate: true });
       const reader = new FileReader();
       reader.onload = (e) => setImagePreview(e.target.result);
       reader.readAsDataURL(file);
@@ -62,6 +63,7 @@ export default function PredictionForm() {
   const handleFileInput = (e) => {
     const file = e.target.files[0];
     handleImageChange(file);
+    e.target.value = "";
   };
 
   const handleDrag = (e) => {
@@ -78,19 +80,32 @@ export default function PredictionForm() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleImageChange(e.dataTransfer.files[0]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
   const removeImage = () => {
-    setValue("image", null);
+    setValue("image", null, { shouldValidate: true });
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const onSubmit = (data) => {
-    createPrediction.mutate(data);
+    createPrediction.mutate(data, {
+      onSuccess: () => {
+        reset();
+        setImagePreview(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    });
   };
 
   return (
@@ -209,7 +224,7 @@ export default function PredictionForm() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <FileImage className="h-4 w-4" />
-                    <span>Mendukung: PNG, JPG, JPEG (max 10MB)</span>
+                    <span>Mendukung: PNG, JPG, JPEG (max 5MB)</span>
                   </div>
                 </div>
               )}
@@ -219,13 +234,16 @@ export default function PredictionForm() {
                 accept="image/*"
                 onChange={handleFileInput}
                 className="hidden"
+                ref={fileInputRef}
               />
               {!imagePreview && (
                 <Button
                   type="button"
                   variant="outline"
                   className="mt-4 border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
-                  onClick={() => document.getElementById("image").click()}
+                  onClick={() =>
+                    fileInputRef.current && fileInputRef.current.click()
+                  }
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   Pilih Gambar
