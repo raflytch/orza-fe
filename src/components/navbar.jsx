@@ -14,7 +14,7 @@ import {
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useLogout } from "@/hooks/use-auth";
-import { getCookie, deleteCookie } from "cookies-next";
+import { getCookie, deleteCookie } from "cookies-next/client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -144,7 +144,7 @@ export default function Navbar() {
           Komunitas
         </Link>
         <Link
-          href="/artikel"
+          href="/article"
           className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-200 hover:text-yellow-600 transition-colors px-3 py-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
         >
           <FaBookOpen className="text-yellow-500" />
@@ -273,7 +273,7 @@ export default function Navbar() {
                 Komunitas
               </Link>
               <Link
-                href="/artikel"
+                href="/article"
                 className="flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200 hover:text-yellow-600 transition-colors px-4 py-3 rounded-xl text-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
                 onClick={() => setOpen(false)}
               >

@@ -17,7 +17,7 @@ import { Loader2 } from "lucide-react";
 import { images } from "@/constants/images";
 import Image from "next/image";
 import { useVerifyOtp } from "@/hooks/use-auth";
-import { getCookie } from "cookies-next";
+import { getCookie } from "cookies-next/client";
 import {
   InputOTP,
   InputOTPGroup,
