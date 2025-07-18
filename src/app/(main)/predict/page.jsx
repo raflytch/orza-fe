@@ -36,7 +36,7 @@ export default function PredictPage() {
             <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8">
               <TabsTrigger value="new" className="flex items-center gap-2">
                 <FaLeaf className="h-4 w-4" />
-                Analisis Baru
+                Analisis
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <FaHistory className="h-4 w-4" />

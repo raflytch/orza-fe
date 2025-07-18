@@ -113,9 +113,9 @@ export default function PredictionForm() {
       <CardHeader className="text-center bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-t-lg">
         <div className="flex items-center justify-center gap-3 mb-4 py-4">
           <div className="p-3 bg-white/20 rounded-full">
-            <FaRobot className="text-2xl" />
+            <FaRobot className="text-lg md:text-xl" />
           </div>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-xs md:text-xl font-bold">
             AI Plant Disease Detection
           </CardTitle>
         </div>

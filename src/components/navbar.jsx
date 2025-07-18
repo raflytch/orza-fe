@@ -12,10 +12,10 @@ import {
   FaSignOutAlt,
   FaUser,
 } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useLogout } from "@/hooks/use-auth";
-import { getCookie } from "cookies-next";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,10 +44,24 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const token = getCookie("token");
+  const [token, setToken] = useState(null);
   const { data: profile } = useProfile();
   const logout = useLogout();
   const unreadCount = useUnreadCount();
+
+  useEffect(() => {
+    const currentToken = Cookies.get("token");
+    setToken(currentToken);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentToken = Cookies.get("token");
+      setToken(currentToken);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/otp")
     return null;
@@ -56,6 +70,7 @@ export default function Navbar() {
     logout();
     setShowLogoutDialog(false);
     setOpen(false);
+    setToken(null);
   };
 
   return (
