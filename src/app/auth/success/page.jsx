@@ -20,7 +20,6 @@ function AuthSuccessContent() {
       setCookie("token", token, {
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
-        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
       });
 

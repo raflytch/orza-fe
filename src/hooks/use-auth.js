@@ -23,7 +23,6 @@ export const useLogin = () => {
         setCookie("token", data.data.token, {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
-          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
         });
 
@@ -52,7 +51,6 @@ export const useRegister = () => {
         setCookie("email", variables.email, {
           maxAge: 60 * 10,
           path: "/",
-          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
         });
 
@@ -83,7 +81,6 @@ export const useVerifyOtp = () => {
         setCookie("token", data.data.token, {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
-          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
         });
 
