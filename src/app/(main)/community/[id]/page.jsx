@@ -1,35 +1,31 @@
 "use client";
 
 import CommunityDetailSkeleton from "@/components/community/community-detail-skeleton";
-import { useState } from "react";
+import { getCookie } from "cookies-next/client";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  useGetCommunityById, 
-  useJoinCommunity, 
+import {
+  useGetCommunityById,
+  useJoinCommunity,
   useLeaveCommunity,
   useUpdateCommunity,
-  useDeleteCommunity 
+  useDeleteCommunity,
 } from "@/hooks/use-community";
 import { useGetPostsByCommunity } from "@/hooks/use-post";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogTrigger,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { 
-  Loader2, 
-  Users, 
-  Calendar, 
-  ArrowLeft, 
+import {
+  Loader2,
+  Users,
+  Calendar,
+  ArrowLeft,
   Settings,
   Trash2,
   UserPlus,
@@ -37,7 +33,7 @@ import {
   Plus,
   MessageCircle,
   Heart,
-  ImageIcon
+  ImageIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,17 +47,32 @@ export default function CommunityDetailPage() {
   const [postsPage, setPostsPage] = useState(1);
   const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  
-  const { data: community, isLoading: isLoadingCommunity, error: communityError } = useGetCommunityById(params.id);
-  const { data: postsData, isLoading: isLoadingPosts, error: postsError } = useGetPostsByCommunity(params.id, postsPage, 10);
+
+  const {
+    data: community,
+    isLoading: isLoadingCommunity,
+    error: communityError,
+  } = useGetCommunityById(params.id);
+  const {
+    data: postsData,
+    isLoading: isLoadingPosts,
+    error: postsError,
+  } = useGetPostsByCommunity(params.id, postsPage, 10);
   const { data: profile } = useProfile();
-  
+
   const joinMutation = useJoinCommunity();
   const leaveMutation = useLeaveCommunity();
   const deleteMutation = useDeleteCommunity();
 
+  useEffect(() => {
+    const token = getCookie("token");
+    if (!token) {
+      router.push("/sign-in");
+    }
+  }, [router]);
+
   if (isLoadingCommunity) {
-      return <CommunityDetailSkeleton />;
+    return <CommunityDetailSkeleton />;
   }
 
   if (communityError) {
@@ -88,15 +99,15 @@ export default function CommunityDetailPage() {
   const communityData = community?.data;
   const isOwner = profile?.data?.id === communityData?.ownerId;
   const isMember = communityData?.members?.some(
-    member => member.userId === profile?.data?.id
+    (member) => member.userId === profile?.data?.id
   );
-  
+
   // Get posts from API data or fallback to empty array
   const posts = postsData?.data?.posts || [];
 
   const handleJoin = () => {
     if (!profile?.data) {
-      window.location.href = '/sign-in';
+      window.location.href = "/sign-in";
       return;
     }
     joinMutation.mutate(communityData.id);
@@ -107,7 +118,7 @@ export default function CommunityDetailPage() {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus komunitas ini?')) {
+    if (window.confirm("Apakah Anda yakin ingin menghapus komunitas ini?")) {
       deleteMutation.mutate(communityData.id);
     }
   };
@@ -118,7 +129,10 @@ export default function CommunityDetailPage() {
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/community">
-            <Button variant="outline" className="hover:bg-green-50 border-green-200">
+            <Button
+              variant="outline"
+              className="hover:bg-green-50 border-green-200"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Kembali ke Komunitas
             </Button>
@@ -156,41 +170,57 @@ export default function CommunityDetailPage() {
                       <h1 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">
                         {communityData?.name}
                       </h1>
-                      
+
                       {/* Meta Info */}
                       <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 text-sm text-gray-500 mb-3">
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4" />
-                          <span>{communityData?.members?.length || 0} anggota</span>
+                          <span>
+                            {communityData?.members?.length || 0} anggota
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          <span>Dibuat {new Date(communityData?.createdAt).toLocaleDateString('id-ID')}</span>
+                          <span>
+                            Dibuat{" "}
+                            {new Date(
+                              communityData?.createdAt
+                            ).toLocaleDateString("id-ID")}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Owner Controls */}
                     {isOwner && (
                       <div className="flex gap-2 justify-center lg:justify-end">
-                        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                        <Dialog
+                          open={isEditDialogOpen}
+                          onOpenChange={setIsEditDialogOpen}
+                        >
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="text-gray-600 hover:text-green-600 hover:border-green-300">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 hover:text-green-600 hover:border-green-300"
+                            >
                               <Settings className="w-4 h-4 mr-2" />
                               Edit
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <DialogTitle className="sr-only">Edit Komunitas</DialogTitle>
-                            <CommunityForm 
+                            <DialogTitle className="sr-only">
+                              Edit Komunitas
+                            </DialogTitle>
+                            <CommunityForm
                               community={communityData}
-                              onCancel={() => setIsEditDialogOpen(false)} 
+                              onCancel={() => setIsEditDialogOpen(false)}
                             />
                           </DialogContent>
                         </Dialog>
 
-                        <Button 
-                          variant="destructive" 
+                        <Button
+                          variant="destructive"
                           size="sm"
                           onClick={handleDelete}
                           disabled={deleteMutation.isPending}
@@ -209,7 +239,9 @@ export default function CommunityDetailPage() {
 
                   {/* Description Section */}
                   <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Deskripsi</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                      Deskripsi
+                    </h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
                       {communityData?.description}
                     </p>
@@ -218,7 +250,7 @@ export default function CommunityDetailPage() {
                   {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                     {!isOwner && profile?.data && !isMember && (
-                      <Button 
+                      <Button
                         onClick={handleJoin}
                         disabled={joinMutation.isPending}
                         className="bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg transition-all duration-200"
@@ -234,7 +266,7 @@ export default function CommunityDetailPage() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Bottom Border Accent */}
               <div className="h-1 bg-green-400"></div>
             </div>
@@ -259,7 +291,10 @@ export default function CommunityDetailPage() {
             {/* Create Post Button */}
             {(isMember || isOwner) && (
               <div className="mb-6">
-                <Dialog open={isCreatePostDialogOpen} onOpenChange={setIsCreatePostDialogOpen}>
+                <Dialog
+                  open={isCreatePostDialogOpen}
+                  onOpenChange={setIsCreatePostDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button className="w-full bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200 rounded-lg py-3 text-left justify-start">
                       <Plus className="w-4 h-4 mr-2" />
@@ -267,9 +302,11 @@ export default function CommunityDetailPage() {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogTitle className="sr-only">Buat Postingan Baru</DialogTitle>
-                    <PostForm 
-                      communityId={params.id} 
+                    <DialogTitle className="sr-only">
+                      Buat Postingan Baru
+                    </DialogTitle>
+                    <PostForm
+                      communityId={params.id}
                       onCancel={() => setIsCreatePostDialogOpen(false)}
                     />
                   </DialogContent>
@@ -296,60 +333,73 @@ export default function CommunityDetailPage() {
 
             {/* Posts list */}
             <div className="space-y-4">
-              {!isLoadingPosts && !postsError && posts.map((post) => (
-                <Card key={post.id} className="border-0 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg overflow-hidden bg-white">
-                  <CardContent className="p-0">
-                    {/* Post Header */}
-                    <div className="p-4 border-b border-gray-100">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-gray-500" />
+              {!isLoadingPosts &&
+                !postsError &&
+                posts.map((post) => (
+                  <Card
+                    key={post.id}
+                    className="border-0 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg overflow-hidden bg-white"
+                  >
+                    <CardContent className="p-0">
+                      {/* Post Header */}
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 text-gray-500" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">
+                              {post.user?.name || "Pengguna"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(post.createdAt).toLocaleDateString(
+                                "id-ID"
+                              )}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">{post.user?.name || "Pengguna"}</p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(post.createdAt).toLocaleDateString('id-ID')}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <Link href={`/community/${params.id}/${post.id}`}>
-                        <h3 className="font-semibold text-gray-800 hover:text-green-600 cursor-pointer">
-                          {post.title}
-                        </h3>
-                      </Link>
-                    </div>
 
-                    {/* Post Image */}
-                    {post.imageUrl && (
-                      <div className="relative h-64 w-full">
-                        <Image 
-                          src={post.imageUrl} 
-                          alt={post.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-
-                    {/* Post Content */}
-                    <div className="p-4">
-                      <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                        {post.content}
-                      </p>
-
-                      {/* Post Stats */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                         <Link href={`/community/${params.id}/${post.id}`}>
-                          <Button variant="outline" size="sm" className="text-xs">
-                            Baca Selengkapnya
-                          </Button>
+                          <h3 className="font-semibold text-gray-800 hover:text-green-600 cursor-pointer">
+                            {post.title}
+                          </h3>
                         </Link>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                      {/* Post Image */}
+                      {post.imageUrl && (
+                        <div className="relative h-64 w-full">
+                          <Image
+                            src={post.imageUrl}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Post Content */}
+                      <div className="p-4">
+                        <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                          {post.content}
+                        </p>
+
+                        {/* Post Stats */}
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                          <Link href={`/community/${params.id}/${post.id}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              Baca Selengkapnya
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
 
             {/* Empty state */}
@@ -364,7 +414,10 @@ export default function CommunityDetailPage() {
                     Jadilah yang pertama membuat postingan di komunitas ini
                   </p>
                   {(isMember || isOwner) && (
-                    <Dialog open={isCreatePostDialogOpen} onOpenChange={setIsCreatePostDialogOpen}>
+                    <Dialog
+                      open={isCreatePostDialogOpen}
+                      onOpenChange={setIsCreatePostDialogOpen}
+                    >
                       <DialogTrigger asChild>
                         <Button className="bg-green-600 hover:bg-green-700">
                           <Plus className="w-4 h-4 mr-2" />
@@ -372,9 +425,11 @@ export default function CommunityDetailPage() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <DialogTitle className="sr-only">Buat Postingan Pertama</DialogTitle>
-                        <PostForm 
-                          communityId={params.id} 
+                        <DialogTitle className="sr-only">
+                          Buat Postingan Pertama
+                        </DialogTitle>
+                        <PostForm
+                          communityId={params.id}
                           onCancel={() => setIsCreatePostDialogOpen(false)}
                         />
                       </DialogContent>
@@ -395,7 +450,7 @@ export default function CommunityDetailPage() {
                 >
                   Sebelumnya
                 </Button>
-                
+
                 <div className="flex items-center gap-2">
                   {Array.from(
                     { length: Math.min(5, postsData.pagination.totalPages) },
@@ -404,10 +459,16 @@ export default function CommunityDetailPage() {
                       return (
                         <Button
                           key={pageNum}
-                          variant={postsPage === pageNum ? "default" : "outline"}
+                          variant={
+                            postsPage === pageNum ? "default" : "outline"
+                          }
                           size="sm"
                           onClick={() => setPostsPage(pageNum)}
-                          className={postsPage === pageNum ? "bg-green-600 hover:bg-green-700" : "hover:bg-green-50"}
+                          className={
+                            postsPage === pageNum
+                              ? "bg-green-600 hover:bg-green-700"
+                              : "hover:bg-green-50"
+                          }
                         >
                           {pageNum}
                         </Button>
@@ -415,7 +476,7 @@ export default function CommunityDetailPage() {
                     }
                   )}
                 </div>
-                
+
                 <Button
                   variant="outline"
                   disabled={postsPage === postsData.pagination.totalPages}
@@ -433,26 +494,36 @@ export default function CommunityDetailPage() {
             {/* About Section */}
             <Card className="border-0 shadow-sm rounded-lg">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold">About Community</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  About Community
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-sm">
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Members</span>
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                    <Badge
+                      variant="secondary"
+                      className="bg-gray-100 text-gray-700"
+                    >
                       {communityData?.members?.length || 0}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Posts</span>
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                    <Badge
+                      variant="secondary"
+                      className="bg-gray-100 text-gray-700"
+                    >
                       {postsData?.pagination?.total || posts.length || 0}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Created</span>
                     <span className="text-gray-600 text-xs">
-                      {new Date(communityData?.createdAt).toLocaleDateString('id-ID')}
+                      {new Date(communityData?.createdAt).toLocaleDateString(
+                        "id-ID"
+                      )}
                     </span>
                   </div>
                 </div>
@@ -465,11 +536,14 @@ export default function CommunityDetailPage() {
                 <CardTitle className="text-lg font-semibold">Members</CardTitle>
               </CardHeader>
               <CardContent>
-                {(communityData?.owner || communityData?.members?.length > 0) ? (
+                {communityData?.owner || communityData?.members?.length > 0 ? (
                   <div className="space-y-3">
                     {/* Display Owner first */}
                     {communityData?.owner && (
-                      <div key={communityData.owner.id} className="flex items-center gap-3">
+                      <div
+                        key={communityData.owner.id}
+                        className="flex items-center gap-3"
+                      >
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                           <Users className="w-4 h-4 text-blue-600" />
                         </div>
@@ -479,44 +553,58 @@ export default function CommunityDetailPage() {
                           </p>
                           <div className="flex items-center gap-2">
                             <p className="text-xs text-gray-500">
-                              {new Date(communityData.createdAt).toLocaleDateString('id-ID')}
+                              {new Date(
+                                communityData.createdAt
+                              ).toLocaleDateString("id-ID")}
                             </p>
-                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs bg-blue-100 text-blue-700"
+                            >
                               Owner
                             </Badge>
                           </div>
                         </div>
                       </div>
                     )}
-                    
+
                     {/* Display Members */}
-                    {communityData?.members?.slice(0, communityData?.owner ? 4 : 5).map((member) => (
-                      <div key={member.id} className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-green-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">
-                            {member.name}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <p className="text-xs text-gray-500">
-                              Member
-                            </p>
-                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
-                              Member
-                            </Badge>
+                    {communityData?.members
+                      ?.slice(0, communityData?.owner ? 4 : 5)
+                      .map((member) => (
+                        <div
+                          key={member.id}
+                          className="flex items-center gap-3"
+                        >
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <Users className="w-4 h-4 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{member.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-gray-500">Member</p>
+                              <Badge
+                                variant="secondary"
+                                className="text-xs bg-green-100 text-green-700"
+                              >
+                                Member
+                              </Badge>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                    
+                      ))}
+
                     {/* Show remaining count if there are more members */}
-                    {communityData?.members && communityData.members.length > (communityData?.owner ? 4 : 5) && (
-                      <p className="text-xs text-gray-500 text-center pt-2">
-                        +{communityData.members.length - (communityData?.owner ? 4 : 5)} members lainnya
-                      </p>
-                    )}
+                    {communityData?.members &&
+                      communityData.members.length >
+                        (communityData?.owner ? 4 : 5) && (
+                        <p className="text-xs text-gray-500 text-center pt-2">
+                          +
+                          {communityData.members.length -
+                            (communityData?.owner ? 4 : 5)}{" "}
+                          members lainnya
+                        </p>
+                      )}
                   </div>
                 ) : (
                   <p className="text-gray-500 text-sm text-center py-4">
