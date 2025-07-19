@@ -1,5 +1,6 @@
 "use client";
 
+import MyCommunityPageSkeleton from "@/components/community/my-community-skeleton";
 import { useState } from "react";
 import { useGetMyCommunities } from "@/hooks/use-community";
 import { Button } from "@/components/ui/button";
@@ -47,16 +48,7 @@ export default function MyCommunityPage() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-12 w-12 animate-spin text-green-600" />
-            <p className="text-gray-600 text-lg">Memuat komunitas Anda...</p>
-          </div>
-        </div>
-      </main>
-    );
+    return <MyCommunityPageSkeleton />;
   }
 
   // Error state
