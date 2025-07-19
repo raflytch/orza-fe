@@ -36,6 +36,17 @@ import {
   Heart,
   ImageIcon,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { useProfile } from "@/hooks/use-auth";
@@ -46,8 +57,9 @@ export default function CommunityDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [postsPage, setPostsPage] = useState(1);
-  const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const {
@@ -129,9 +141,8 @@ export default function CommunityDetailPage() {
   };
 
   const handleDelete = () => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus komunitas ini?")) {
-      deleteMutation.mutate(communityData.id);
-    }
+    deleteMutation.mutate(communityData.id);
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -221,20 +232,50 @@ export default function CommunityDetailPage() {
                           </DialogContent>
                         </Dialog>
 
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={handleDelete}
-                          disabled={deleteMutation.isPending}
-                          className="hover:bg-red-600"
+                        <AlertDialog
+                          open={isDeleteDialogOpen}
+                          onOpenChange={setIsDeleteDialogOpen}
                         >
-                          {deleteMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4 mr-2" />
-                          )}
-                          Hapus
-                        </Button>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              disabled={deleteMutation.isPending}
+                              className="hover:bg-red-600"
+                            >
+                              {deleteMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4 mr-2" />
+                              )}
+                              Hapus
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Konfirmasi Hapus Komunitas
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Apakah Anda yakin ingin menghapus komunitas ini? Tindakan ini tidak dapat dibatalkan.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Batal</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={handleDelete}
+                                disabled={deleteMutation.isPending}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                {deleteMutation.isPending ? (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                  "Hapus"
+                                )}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     )}
                   </div>
@@ -263,21 +304,6 @@ export default function CommunityDetailPage() {
                         Bergabung
                       </Button>
                     )}
-                    {/* {!isOwner && isMember && (
-                      <Button
-                        onClick={handleLeave}
-                        disabled={leaveMutation.isPending}
-                        variant="outline"
-                        className="border-red-300 text-red-600 hover:bg-red-50"
-                      >
-                        {leaveMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <UserMinus className="w-4 h-4 mr-2" />
-                        )}
-                        Keluar
-                      </Button>
-                    )} */}
                   </div>
                 </div>
               </div>
