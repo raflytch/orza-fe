@@ -4,6 +4,7 @@ import CommunityDetailSkeleton from "@/components/community/community-detail-ske
 import { getCookie } from "cookies-next/client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 import {
   useGetCommunityById,
   useJoinCommunity,
@@ -47,6 +48,7 @@ export default function CommunityDetailPage() {
   const [postsPage, setPostsPage] = useState(1);
   const [isCreatePostDialogOpen, setIsCreatePostDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const {
     data: community,
@@ -67,6 +69,15 @@ export default function CommunityDetailPage() {
   useEffect(() => {
     const token = getCookie("token");
     if (!token) {
+      router.push("/sign-in");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      setCurrentUserId(decoded.userId);
+    } catch (error) {
+      console.error("Invalid token:", error);
       router.push("/sign-in");
     }
   }, [router]);
@@ -97,17 +108,17 @@ export default function CommunityDetailPage() {
   }
 
   const communityData = community?.data;
-  const isOwner = profile?.data?.id === communityData?.ownerId;
+  const isOwner = currentUserId === communityData?.owner?.id;
   const isMember = communityData?.members?.some(
-    (member) => member.userId === profile?.data?.id
+    (member) => member.id === currentUserId
   );
+  const canAccessCommunity = isOwner || isMember;
 
-  // Get posts from API data or fallback to empty array
   const posts = postsData?.data?.posts || [];
 
   const handleJoin = () => {
-    if (!profile?.data) {
-      window.location.href = "/sign-in";
+    if (!currentUserId) {
+      router.push("/sign-in");
       return;
     }
     joinMutation.mutate(communityData.id);
@@ -126,7 +137,6 @@ export default function CommunityDetailPage() {
   return (
     <main className="min-h-screen bg-gray-50 py-28">
       <div className="container mx-auto px-4 max-w-6xl">
-        {/* Back Button */}
         <div className="mb-6">
           <Link href="/community">
             <Button
@@ -139,13 +149,10 @@ export default function CommunityDetailPage() {
           </Link>
         </div>
 
-        {/* Community Header Card - Layout seperti gambar */}
         <Card className="mb-8 overflow-hidden border-0 shadow-lg bg-white rounded-xl">
           <div className="relative">
-            {/* Clean Header Design */}
             <div className="bg-white rounded-xl overflow-hidden border border-gray-100">
               <div className="flex flex-col lg:flex-row p-4 lg:p-6 gap-4 lg:gap-6">
-                {/* Image Section */}
                 <div className="flex-shrink-0 mx-auto lg:mx-0">
                   <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-xl overflow-hidden ring-4 ring-green-50">
                     {communityData?.imageUrl ? (
@@ -163,7 +170,6 @@ export default function CommunityDetailPage() {
                   </div>
                 </div>
 
-                {/* Content Section */}
                 <div className="flex-1 text-center lg:text-left">
                   <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 gap-3">
                     <div>
@@ -171,13 +177,10 @@ export default function CommunityDetailPage() {
                         {communityData?.name}
                       </h1>
 
-                      {/* Meta Info */}
                       <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 text-sm text-gray-500 mb-3">
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4" />
-                          <span>
-                            {communityData?.members?.length || 0} anggota
-                          </span>
+                          <span>{communityData?.memberCount || 0} anggota</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
@@ -191,7 +194,6 @@ export default function CommunityDetailPage() {
                       </div>
                     </div>
 
-                    {/* Owner Controls */}
                     {isOwner && (
                       <div className="flex gap-2 justify-center lg:justify-end">
                         <Dialog
@@ -237,7 +239,6 @@ export default function CommunityDetailPage() {
                     )}
                   </div>
 
-                  {/* Description Section */}
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">
                       Deskripsi
@@ -247,9 +248,8 @@ export default function CommunityDetailPage() {
                     </p>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                    {!isOwner && profile?.data && !isMember && (
+                    {!isOwner && currentUserId && !isMember && (
                       <Button
                         onClick={handleJoin}
                         disabled={joinMutation.isPending}
@@ -263,17 +263,30 @@ export default function CommunityDetailPage() {
                         Bergabung
                       </Button>
                     )}
+                    {/* {!isOwner && isMember && (
+                      <Button
+                        onClick={handleLeave}
+                        disabled={leaveMutation.isPending}
+                        variant="outline"
+                        className="border-red-300 text-red-600 hover:bg-red-50"
+                      >
+                        {leaveMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <UserMinus className="w-4 h-4 mr-2" />
+                        )}
+                        Keluar
+                      </Button>
+                    )} */}
                   </div>
                 </div>
               </div>
 
-              {/* Bottom Border Accent */}
               <div className="h-1 bg-green-400"></div>
             </div>
           </div>
         </Card>
 
-        {/* Navigation Tabs */}
         <div className="mb-6">
           <div className="border-b border-gray-200 bg-white rounded-t-lg px-6">
             <div className="flex space-x-8 py-4">
@@ -284,12 +297,9 @@ export default function CommunityDetailPage() {
           </div>
         </div>
 
-        {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Posts Section - Takes 3 columns */}
           <div className="lg:col-span-3">
-            {/* Create Post Button */}
-            {(isMember || isOwner) && (
+            {canAccessCommunity && (
               <div className="mb-6">
                 <Dialog
                   open={isCreatePostDialogOpen}
@@ -314,14 +324,12 @@ export default function CommunityDetailPage() {
               </div>
             )}
 
-            {/* Loading state for posts */}
             {isLoadingPosts && (
               <div className="flex items-center justify-center py-10">
                 <Loader2 className="h-8 w-8 animate-spin text-green-600" />
               </div>
             )}
 
-            {/* Error state for posts */}
             {postsError && (
               <Card className="border-0 shadow-sm">
                 <CardContent className="text-center py-8">
@@ -331,7 +339,6 @@ export default function CommunityDetailPage() {
               </Card>
             )}
 
-            {/* Posts list */}
             <div className="space-y-4">
               {!isLoadingPosts &&
                 !postsError &&
@@ -341,7 +348,6 @@ export default function CommunityDetailPage() {
                     className="border-0 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg overflow-hidden bg-white"
                   >
                     <CardContent className="p-0">
-                      {/* Post Header */}
                       <div className="p-4 border-b border-gray-100">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -366,7 +372,6 @@ export default function CommunityDetailPage() {
                         </Link>
                       </div>
 
-                      {/* Post Image */}
                       {post.imageUrl && (
                         <div className="relative h-64 w-full">
                           <Image
@@ -378,13 +383,11 @@ export default function CommunityDetailPage() {
                         </div>
                       )}
 
-                      {/* Post Content */}
                       <div className="p-4">
                         <p className="text-gray-600 text-sm line-clamp-3 mb-4">
                           {post.content}
                         </p>
 
-                        {/* Post Stats */}
                         <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                           <Link href={`/community/${params.id}/${post.id}`}>
                             <Button
@@ -402,7 +405,6 @@ export default function CommunityDetailPage() {
                 ))}
             </div>
 
-            {/* Empty state */}
             {!isLoadingPosts && !postsError && posts.length === 0 && (
               <Card className="border-0 shadow-sm">
                 <CardContent className="text-center py-12">
@@ -413,7 +415,7 @@ export default function CommunityDetailPage() {
                   <p className="text-gray-500 mb-4">
                     Jadilah yang pertama membuat postingan di komunitas ini
                   </p>
-                  {(isMember || isOwner) && (
+                  {canAccessCommunity && (
                     <Dialog
                       open={isCreatePostDialogOpen}
                       onOpenChange={setIsCreatePostDialogOpen}
@@ -439,7 +441,6 @@ export default function CommunityDetailPage() {
               </Card>
             )}
 
-            {/* Pagination for posts */}
             {postsData?.pagination && postsData.pagination.totalPages > 1 && (
               <div className="flex justify-center gap-2 mt-6">
                 <Button
@@ -489,9 +490,7 @@ export default function CommunityDetailPage() {
             )}
           </div>
 
-          {/* Sidebar - Takes 1 column */}
           <div className="space-y-6">
-            {/* About Section */}
             <Card className="border-0 shadow-sm rounded-lg">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold">
@@ -506,7 +505,7 @@ export default function CommunityDetailPage() {
                       variant="secondary"
                       className="bg-gray-100 text-gray-700"
                     >
-                      {communityData?.members?.length || 0}
+                      {communityData?.memberCount || 0}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center py-2">
@@ -530,7 +529,6 @@ export default function CommunityDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Members List */}
             <Card className="border-0 shadow-sm rounded-lg">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold">Members</CardTitle>
@@ -538,7 +536,6 @@ export default function CommunityDetailPage() {
               <CardContent>
                 {communityData?.owner || communityData?.members?.length > 0 ? (
                   <div className="space-y-3">
-                    {/* Display Owner first */}
                     {communityData?.owner && (
                       <div
                         key={communityData.owner.id}
@@ -568,7 +565,6 @@ export default function CommunityDetailPage() {
                       </div>
                     )}
 
-                    {/* Display Members */}
                     {communityData?.members
                       ?.slice(0, communityData?.owner ? 4 : 5)
                       .map((member) => (
@@ -594,7 +590,6 @@ export default function CommunityDetailPage() {
                         </div>
                       ))}
 
-                    {/* Show remaining count if there are more members */}
                     {communityData?.members &&
                       communityData.members.length >
                         (communityData?.owner ? 4 : 5) && (
