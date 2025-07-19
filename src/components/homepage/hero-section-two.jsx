@@ -66,7 +66,7 @@ const features = [
 
 export default function HeroSectionTwo() {
   return (
-    <section className="w-full py-24 sm:py-24 md:py-24 lg:py-24 flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-12">
+    <section className="w-full py-24 sm:py-24 md:py-24 lg:py-30 flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-12">
       <BlurFade>
         <div className="max-w-4xl text-center mb-10 sm:mb-12 md:mb-16 mx-auto">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 drop-shadow-lg">
