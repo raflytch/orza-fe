@@ -1,5 +1,6 @@
 "use client";
 
+import CommunityPostSkeleton from "@/components/community/community-post-skeleton";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGetPostById, useDeletePost, useAddComment, useGetCommentsByPost, useLikePost, useUnlikePost, useGetLikeCount } from "@/hooks/use-post";
@@ -63,16 +64,7 @@ export default function CommunityPostPage() {
   }, [params.post, refetchPost, refetchComments, refetchLikeCount]);
 
   if (isLoadingPost || isLoadingLikeCount) {
-    return (
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-12 w-12 animate-spin text-green-600" />
-            <p className="text-gray-600">Memuat detail postingan...</p>
-          </div>
-        </div>
-      </main>
-    );
+    return <CommunityPostSkeleton />;
   }
 
   if (postError || !post || !likeCount) {
