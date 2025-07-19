@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FaLeaf, FaHistory, FaChartBar } from "react-icons/fa";
@@ -10,6 +12,14 @@ import PredictionStats from "@/components/prediction/prediction-stats";
 
 export default function PredictPage() {
   const [activeTab, setActiveTab] = useState("new");
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = getCookie("token");
+    if (!token) {
+      router.push("/sign-in");
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 py-28">

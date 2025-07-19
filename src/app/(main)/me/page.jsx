@@ -28,6 +28,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import {
   User,
   Mail,
   Calendar,
@@ -77,6 +82,7 @@ export default function ProfilePage() {
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [otpValue, setOtpValue] = useState("");
   const fileInputRef = useRef(null);
 
   const { data: profile, isLoading: isLoadingProfile } = useGetUserProfile();
@@ -101,10 +107,11 @@ export default function ProfilePage() {
   });
 
   const {
-    register: registerDelete,
     handleSubmit: handleSubmitDelete,
     formState: { errors: deleteErrors },
     reset: resetDelete,
+    setValue: setDeleteValue,
+    trigger,
   } = useForm({
     resolver: zodResolver(deleteAccountSchema),
   });
@@ -192,11 +199,20 @@ export default function ProfilePage() {
     });
   };
 
+  const handleOtpChange = (value) => {
+    setOtpValue(value);
+    setDeleteValue("otp", value);
+    if (value.length === 6) {
+      trigger("otp");
+    }
+  };
+
   const onSubmitDelete = (data) => {
     confirmDeleteMutation.mutate(data.otp, {
       onSuccess: () => {
         setIsOtpDialogOpen(false);
         resetDelete();
+        setOtpValue("");
       },
     });
   };
@@ -528,20 +544,6 @@ export default function ProfilePage() {
                 <div className="text-sm text-gray-600">Postingan Disukai</div>
               </CardContent>
             </Card>
-            <Card className="border-0 bg-white">
-              <CardContent className="p-6 text-center">
-                <MessageCircle className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900 mb-1">-</div>
-                <div className="text-sm text-gray-600">Komentar</div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 bg-white">
-              <CardContent className="p-6 text-center">
-                <Users className="w-8 h-8 text-purple-500 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900 mb-1">-</div>
-                <div className="text-sm text-gray-600">Komunitas</div>
-              </CardContent>
-            </Card>
           </div>
         </BlurFade>
 
@@ -632,21 +634,33 @@ export default function ProfilePage() {
             </DialogHeader>
             <form
               onSubmit={handleSubmitDelete(onSubmitDelete)}
-              className="space-y-4"
+              className="space-y-6"
             >
               <div className="space-y-2">
-                <Label htmlFor="otp">
+                <Label
+                  htmlFor="otp"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Masukkan OTP yang dikirim ke email Anda
                 </Label>
-                <Input
-                  id="otp"
-                  {...registerDelete("otp")}
-                  placeholder="Masukkan 6 digit OTP"
-                  maxLength={6}
-                  className={deleteErrors.otp ? "border-red-500" : ""}
-                />
+                <div className="flex justify-center">
+                  <InputOTP
+                    maxLength={6}
+                    value={otpValue}
+                    onChange={handleOtpChange}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
                 {deleteErrors.otp && (
-                  <p className="text-red-500 text-sm">
+                  <p className="text-red-500 text-sm text-center">
                     {deleteErrors.otp.message}
                   </p>
                 )}
@@ -655,7 +669,11 @@ export default function ProfilePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsOtpDialogOpen(false)}
+                  onClick={() => {
+                    setIsOtpDialogOpen(false);
+                    setOtpValue("");
+                    resetDelete();
+                  }}
                 >
                   Batal
                 </Button>
