@@ -6,13 +6,15 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
   const email = request.cookies.get("email")?.value;
 
-  const protectedRoutes = ["/predict", "/community"];
+  const protectedRoutes = ["/predict", "/community", "/me"];
   const authRoutes = ["/sign-in", "/sign-up"];
   const otpRoute = "/otp";
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+      const redirectUrl = new URL("/sign-in", request.url);
+      redirectUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(redirectUrl);
     }
   }
 

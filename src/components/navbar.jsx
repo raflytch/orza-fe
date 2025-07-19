@@ -43,34 +43,27 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [token, setToken] = useState(null);
-  const { data: profile, refetch: refetchProfile } = useProfile();
+  const { data: profile, refetch: refetchProfile, isLoading } = useProfile();
   const { mutate: logout } = useLogout();
 
   useEffect(() => {
-    const currentToken = getCookie("token");
-    setToken(currentToken);
-    if (currentToken && !profile) {
-      refetchProfile();
-    }
-  }, [profile, refetchProfile]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
+    const checkToken = () => {
       const currentToken = getCookie("token");
       setToken(currentToken);
-      if (currentToken && !profile) {
+
+      if (currentToken && !profile && !isLoading) {
         refetchProfile();
       }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    const interval = setInterval(handleStorageChange, 1000);
+    checkToken();
+
+    const interval = setInterval(checkToken, 1000);
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
-  }, [profile, refetchProfile]);
+  }, [profile, refetchProfile, isLoading]);
 
   if (pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/otp")
     return null;
@@ -84,6 +77,8 @@ export default function Navbar() {
       },
     });
   };
+
+  const isAuthenticated = token && profile?.data;
 
   return (
     <nav className="fixed left-1/2 top-4 z-50 w-[96vw] md:w-[90vw] max-w-6xl -translate-x-1/2 rounded-2xl bg-white/90 backdrop-blur-lg shadow-xl border border-gray-200/50 dark:bg-neutral-900/90 dark:border-neutral-800/50 flex items-center justify-between px-4 md:px-6 py-3 md:py-4 transition-all">
@@ -104,7 +99,7 @@ export default function Navbar() {
       </div>
 
       <div className="lg:hidden flex items-center gap-2">
-        {token && profile?.data && <NotificationPanel />}
+        {isAuthenticated && <NotificationPanel />}
         <button
           aria-label="Menu"
           className="p-2 rounded-xl text-green-600 hover:bg-green-50 focus:outline-none transition-colors"
@@ -161,7 +156,7 @@ export default function Navbar() {
           Artikel
         </Link>
 
-        {token && profile?.data ? (
+        {isAuthenticated ? (
           <div className="flex items-center gap-3">
             <NotificationPanel />
 
@@ -294,7 +289,7 @@ export default function Navbar() {
 
               <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
 
-              {token && profile?.data ? (
+              {isAuthenticated ? (
                 <>
                   <Link
                     href="/me"

@@ -29,10 +29,11 @@ export const useLogin = () => {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
           sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
         });
 
         toast.success(data.message);
-        router.push("/");
+        window.location.href = "/";
       }
     },
     onError: (error) => {
@@ -57,6 +58,7 @@ export const useRegister = () => {
           maxAge: 60 * 10,
           path: "/",
           sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
         });
 
         dispatch(registerSuccess({ email: variables.email }));
@@ -87,13 +89,14 @@ export const useVerifyOtp = () => {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
           sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
         });
 
         deleteCookie("email");
 
         dispatch(verifyOtpSuccess());
         toast.success(data.message);
-        router.push("/");
+        window.location.href = "/";
       }
     },
     onError: (error) => {
@@ -114,10 +117,10 @@ export const useProfile = () => {
     enabled: !!token,
     retry: false,
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-// Alias untuk useProfile agar konsisten dengan penamaan lain
 export const useGetProfile = () => {
   return useProfile();
 };
@@ -130,11 +133,11 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => Promise.resolve(),
     onSuccess: () => {
-      deleteCookie("token");
+      deleteCookie("token", { path: "/" });
       dispatch(clearError());
       queryClient.clear();
       toast.success("Berhasil logout");
-      router.push("/sign-in");
+      window.location.href = "/sign-in";
     },
     onError: (error) => {
       toast.error("Gagal logout");
@@ -164,9 +167,10 @@ export const useForgotPassword = () => {
     onSuccess: (data, variables) => {
       toast.success(data.message || "Link reset password berhasil dikirim");
       setCookie("resetEmail", variables.email, {
-        maxAge: 60 * 30, // 30 minutes
+        maxAge: 60 * 30,
         path: "/",
         sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
       });
       router.push("/reset-password");
     },
