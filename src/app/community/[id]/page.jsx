@@ -454,7 +454,7 @@ export default function CommunityDetailPage() {
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Posts</span>
                     <Badge variant="secondary" className="bg-gray-100 text-gray-700">
-                      {postsData?.pagination?.total || 0}
+                      {postsData?.pagination?.total || posts.length || 0}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center py-2">
@@ -473,31 +473,56 @@ export default function CommunityDetailPage() {
                 <CardTitle className="text-lg font-semibold">Members</CardTitle>
               </CardHeader>
               <CardContent>
-                {communityData?.members?.length > 0 ? (
+                {(communityData?.owner || communityData?.members?.length > 0) ? (
                   <div className="space-y-3">
-                    {communityData.members.slice(0, 5).map((member) => (
+                    {/* Display Owner first */}
+                    {communityData?.owner && (
+                      <div key={communityData.owner.id} className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Users className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">
+                            {communityData.owner.name}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-gray-500">
+                              {new Date(communityData.createdAt).toLocaleDateString('id-ID')}
+                            </p>
+                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                              Owner
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Display Members */}
+                    {communityData?.members?.slice(0, communityData?.owner ? 4 : 5).map((member) => (
                       <div key={member.id} className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                           <Users className="w-4 h-4 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-sm">Member {member.userId.slice(-6)}</p>
+                          <p className="font-medium text-sm">
+                            {member.name}
+                          </p>
                           <div className="flex items-center gap-2">
                             <p className="text-xs text-gray-500">
-                              {new Date(member.joinedAt).toLocaleDateString('id-ID')}
+                              Member
                             </p>
-                            {member.userId === communityData.ownerId && (
-                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
-                                Owner
-                              </Badge>
-                            )}
+                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                              Member
+                            </Badge>
                           </div>
                         </div>
                       </div>
                     ))}
-                    {communityData.members.length > 5 && (
+                    
+                    {/* Show remaining count if there are more members */}
+                    {communityData?.members && communityData.members.length > (communityData?.owner ? 4 : 5) && (
                       <p className="text-xs text-gray-500 text-center pt-2">
-                        +{communityData.members.length - 5} members lainnya
+                        +{communityData.members.length - (communityData?.owner ? 4 : 5)} members lainnya
                       </p>
                     )}
                   </div>
