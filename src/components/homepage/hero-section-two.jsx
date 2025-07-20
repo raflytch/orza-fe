@@ -95,7 +95,7 @@ export default function HeroSectionTwo() {
               { label: "Waktu Deteksi", value: "<3s", color: "text-blue-600" },
               {
                 label: "Jenis Tanaman",
-                value: "50+",
+                value: "10",
                 color: "text-purple-600",
               },
               {
