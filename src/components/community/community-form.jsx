@@ -13,6 +13,7 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Upload, X, Camera, FileImage } from "lucide-react";
 import { useCreateCommunity, useUpdateCommunity } from "@/hooks/use-community";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const communitySchema = z.object({
   name: z.string().min(3, "Nama komunitas minimal 3 karakter"),
@@ -73,12 +74,12 @@ export default function CommunityForm({ community = null, onCancel }) {
 
   const handleFileSelect = (file) => {
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran file maksimal 5MB");
+      toast("Ukuran file maksimal 5MB");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      alert("File harus berupa gambar");
+      toast("File harus berupa gambar");
       return;
     }
 

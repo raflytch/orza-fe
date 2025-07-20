@@ -27,10 +27,16 @@ export const postService = {
 
   // Update post
   updatePost: async (postId, data) => {
-    const response = await apiClient.put(`/posts/${postId}`, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    let payload = data;
+    let headers = {};
+
+    // Jika data adalah FormData, set header multipart
+    if (data instanceof FormData) {
+      headers["Content-Type"] = "multipart/form-data";
+    }
+
+    const response = await apiClient.put(`/posts/${postId}`, payload, {
+      headers,
     });
     return response.data;
   },

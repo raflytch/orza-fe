@@ -21,6 +21,7 @@ import {
 import { Loader2, Upload, X, Camera, FileImage } from "lucide-react";
 import { useCreatePost, useUpdatePost } from "@/hooks/use-post";
 import Image from "next/image";
+import { toast } from "sonner"; // Tambahkan toast
 
 const postSchema = z.object({
   title: z.string().min(3, "Judul minimal 3 karakter"),
@@ -34,7 +35,7 @@ export default function PostForm({ post = null, communityId, onCancel }) {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
   const isEditing = !!post;
-  
+
   const createMutation = useCreatePost();
   const updateMutation = useUpdatePost();
   const isLoading = createMutation.isPending || updateMutation.isPending;
@@ -67,6 +68,13 @@ export default function PostForm({ post = null, communityId, onCancel }) {
 
   const handleImageChange = (file) => {
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Ukuran gambar maksimal 5MB"); // Toast jika lebih dari 5MB
+        setImageFile(null);
+        setImagePreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
       setImageFile(file);
       setValue("image", file, { shouldValidate: true });
       const reader = new FileReader();
@@ -116,11 +124,11 @@ export default function PostForm({ post = null, communityId, onCancel }) {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("content", data.content);
-    
+
     if (!isEditing) {
       formData.append("communityId", communityId);
     }
-    
+
     if (imageFile) {
       formData.append("image", imageFile);
     }

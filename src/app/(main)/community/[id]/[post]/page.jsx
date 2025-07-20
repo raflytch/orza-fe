@@ -361,15 +361,6 @@ export default function CommunityPostPage() {
                       <p className="text-gray-700 text-sm leading-relaxed mb-2">
                         {comment.content}
                       </p>
-                      <div className="flex items-center gap-3">
-                        <Button variant="ghost" size="sm" className="text-xs text-gray-500 hover:text-red-500 p-0 h-auto">
-                          <Heart 
-                            className={`w-3 h-3 mr-1 ${comment.isLiked ? 'text-red-500' : ''}`}
-                            fill={comment.isLiked ? "currentColor" : "none"}
-                          />
-                          {comment.likesCount || 0}
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 </div>
