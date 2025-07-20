@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function CommunityDetailSkeleton() {
   return (
-    <main className="min-h-screen bg-gray-50 py-28">
+    <main className="min-h-screen py-28">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Back Button Skeleton */}
         <div className="mb-6">
@@ -25,14 +25,14 @@ export function CommunityDetailSkeleton() {
                   <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-4 gap-3">
                     <div>
                       <Skeleton className="h-8 w-64 mb-2 mx-auto lg:mx-0" />
-                      
+
                       {/* Meta Info Skeleton */}
                       <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mb-3">
                         <Skeleton className="h-4 w-20" />
                         <Skeleton className="h-4 w-32" />
                       </div>
                     </div>
-                    
+
                     {/* Action Buttons Skeleton */}
                     <div className="flex gap-2 justify-center lg:justify-end">
                       <Skeleton className="h-8 w-16" />
@@ -56,7 +56,7 @@ export function CommunityDetailSkeleton() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Bottom Border */}
               <Skeleton className="h-1 w-full" />
             </div>
@@ -84,7 +84,10 @@ export function CommunityDetailSkeleton() {
             {/* Posts Skeleton */}
             <div className="space-y-4">
               {[...Array(3)].map((_, index) => (
-                <Card key={index} className="border-0 shadow-sm rounded-lg overflow-hidden bg-white">
+                <Card
+                  key={index}
+                  className="border-0 shadow-sm rounded-lg overflow-hidden bg-white"
+                >
                   <CardContent className="p-0">
                     {/* Post Header Skeleton */}
                     <div className="p-4 border-b border-gray-100">
@@ -141,7 +144,10 @@ export function CommunityDetailSkeleton() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex justify-between items-center py-2">
+                    <div
+                      key={i}
+                      className="flex justify-between items-center py-2"
+                    >
                       <Skeleton className="h-4 w-16" />
                       <Skeleton className="h-5 w-8" />
                     </div>
