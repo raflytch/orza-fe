@@ -91,8 +91,9 @@ export default function HeroSectionThree() {
               Bagaimana mengakses riwayat prediksi?
             </AccordionTrigger>
             <AccordionContent className="text-gray-700 dark:text-gray-200 px-4 pb-3 text-sm">
-              Riwayat prediksi dapat diakses melalui dashboard setelah login,
-              lengkap dengan detail hasil analisis.
+              Riwayat prediksi dapat diakses melalui halaman prediksi setelah
+              login, lalu ada pada menu Riwayat, lengkap dengan detail hasil
+              analisis.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
