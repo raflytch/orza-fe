@@ -18,7 +18,7 @@ function AuthSuccessContent() {
 
     if (token) {
       setCookie("token", token, {
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24,
         path: "/",
         sameSite: "strict",
       });

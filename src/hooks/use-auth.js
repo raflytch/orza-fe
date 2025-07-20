@@ -26,7 +26,7 @@ export const useLogin = () => {
     onSuccess: (data) => {
       if (data.status === "success") {
         setCookie("token", data.data.token, {
-          maxAge: 60 * 60 * 24 * 7,
+          maxAge: 60 * 60 * 24,
           path: "/",
           sameSite: "strict",
           secure: process.env.NODE_ENV === "production",
@@ -86,7 +86,7 @@ export const useVerifyOtp = () => {
     onSuccess: (data) => {
       if (data.status === "success") {
         setCookie("token", data.data.token, {
-          maxAge: 60 * 60 * 24 * 7,
+          maxAge: 60 * 60 * 24,
           path: "/",
           sameSite: "strict",
           secure: process.env.NODE_ENV === "production",
