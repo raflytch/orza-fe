@@ -78,7 +78,7 @@ export default function CommunityPage() {
 
   return (
     <main className="w-full min-h-screen">
-      <section className="relative w-full h-screen flex flex-col">
+      <section className="relative w-full h-[80vh] flex flex-col">
         <div className="absolute inset-0">
           <Image
             src={images.bannerComunity}
@@ -93,43 +93,43 @@ export default function CommunityPage() {
         </div>
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 text-center">
           <BlurFade>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 max-w-4xl">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 max-w-3xl">
               Komunitas Petani
             </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8 leading-relaxed">
+            <p className="text-sm md:text-base text-white/90 max-w-xl mx-auto mb-6 leading-relaxed">
               Bergabunglah dengan komunitas petani untuk berbagi pengetahuan dan
               pengalaman
             </p>
-            <div className="relative max-w-md w-full mx-auto">
+            <div className="relative max-w-xs w-full mx-auto">
               <Input
                 placeholder="Cari Komunitas"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-14 bg-white/95 border-0 rounded-full text-base shadow-lg focus:ring-2 focus:ring-green-500"
+                className="pl-10 h-10 bg-white/95 border-0 rounded-full text-sm focus:ring-2 focus:ring-green-500"
               />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
             </div>
           </BlurFade>
         </div>
-        <div className="relative z-10 pb-8 flex justify-center">
+        <div className="relative z-10 pb-6 flex justify-center">
           <div className="animate-bounce">
-            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2"></div>
+            <div className="w-5 h-8 border-2 border-white/50 rounded-full flex justify-center">
+              <div className="w-1 h-2 bg-white/50 rounded-full mt-1"></div>
             </div>
           </div>
         </div>
       </section>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8">
         <BlurFade delay={0.1}>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-            <div className="flex items-center gap-8 mb-4 sm:mb-0">
-              <h2 className="text-xl font-bold text-green-600 relative after:content-[''] after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-green-500">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <div className="flex items-center gap-6 mb-2 sm:mb-0">
+              <h2 className="text-lg font-bold text-green-600 relative after:content-[''] after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-[3px] after:bg-green-500">
                 All Community
               </h2>
               {profile?.data && (
                 <Link
                   href="/community/my"
-                  className="text-xl font-medium text-gray-500 hover:text-green-600 transition-colors"
+                  className="text-lg font-medium text-gray-500 hover:text-green-600 transition-colors"
                 >
                   My Community
                 </Link>
@@ -140,7 +140,7 @@ export default function CommunityPage() {
               onOpenChange={setIsCreateDialogOpen}
             >
               <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="bg-green-600 hover:bg-green-700 rounded-full transition-all duration-300 mt-4 sm:mt-0">
                   <Plus className="w-4 h-4 mr-2" />
                   Buat Komunitas
                 </Button>
@@ -156,16 +156,16 @@ export default function CommunityPage() {
         </BlurFade>
         <BlurFade delay={0.2}>
           {filteredCommunities.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                <Users className="w-12 h-12 text-gray-400" />
+            <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <Users className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-3">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
                 {searchTerm
                   ? "Komunitas tidak ditemukan"
                   : "Belum ada komunitas"}
               </h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              <p className="text-gray-500 mb-4 max-w-md mx-auto text-sm">
                 {searchTerm
                   ? "Coba gunakan kata kunci yang berbeda untuk menemukan komunitas yang Anda cari"
                   : "Jadilah yang pertama membuat komunitas baru dan mulai berbagi pengalaman dengan sesama petani"}
@@ -176,7 +176,7 @@ export default function CommunityPage() {
                   onOpenChange={setIsCreateDialogOpen}
                 >
                   <DialogTrigger asChild>
-                    <Button className="bg-green-600 hover:bg-green-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                    <Button className="bg-green-600 hover:bg-green-700 rounded-full transition-all duration-300 mt-4">
                       <Plus className="w-4 h-4 mr-2" />
                       Buat Komunitas Pertama
                     </Button>
@@ -194,7 +194,7 @@ export default function CommunityPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
                 {filteredCommunities.map((community) => {
                   const isMember = community.members?.some(
                     (member) => member.userId === profile?.data?.id
@@ -203,55 +203,63 @@ export default function CommunityPage() {
                   return (
                     <Card
                       key={community.id}
-                      className="group overflow-hidden rounded-2xl border-0 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                      className="group overflow-hidden rounded-xl border border-gray-200 bg-white hover:border-green-300 transition-all duration-300 hover:-translate-y-1 px-5"
                     >
-                      <div className="relative h-52 w-full overflow-hidden">
+                      <div className="relative h-36 w-full overflow-hidden px-3 rounded-lg">
                         {community.imageUrl ? (
                           <Image
                             src={community.imageUrl}
                             alt={community.name}
                             fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-110"
+                            className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-lg"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center">
-                            <Users className="w-16 h-16 text-white opacity-80" />
+                          <div className="w-full h-full bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center rounded-lg">
+                            <Users className="w-10 h-10 text-white opacity-80" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div className="absolute top-4 right-4 flex flex-col gap-2">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                        <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
                           <Badge
                             variant="secondary"
-                            className="bg-white/95 text-gray-700 font-medium px-3 py-1.5 text-xs rounded-full shadow-lg backdrop-blur-sm"
+                            className="bg-white/90 text-gray-700 font-medium px-2 py-1 text-xs rounded-full backdrop-blur-sm border border-gray-200"
                           >
-                            <Users className="w-3 h-3 mr-1.5" />
-                            {community.members?.length || 0}
+                            <Users className="w-3 h-3 mr-1" />
+                            {community.memberCount ||
+                              community.members?.length ||
+                              0}
                           </Badge>
                           {isOwner && (
-                            <Badge className="bg-blue-500 text-white px-3 py-1.5 rounded-full shadow-lg">
+                            <Badge className="bg-blue-500/90 text-white px-2 py-1 rounded-full backdrop-blur-sm text-xs border border-blue-300">
                               Owner
                             </Badge>
                           )}
                           {isMember && !isOwner && (
-                            <Badge className="bg-green-500 text-white px-3 py-1.5 rounded-full shadow-lg">
-                              Anggota
+                            <Badge className="bg-green-500/90 text-white px-2 py-1 rounded-full backdrop-blur-sm text-xs border border-green-300">
+                              Member
                             </Badge>
                           )}
                         </div>
                       </div>
-                      <CardHeader className="pt-6 pb-3">
+                      <CardHeader className="px-4">
                         <Link href={`/community/${community.id}`}>
-                          <CardTitle className="text-xl font-bold line-clamp-1 text-gray-800 hover:text-green-600 transition-colors duration-200">
+                          <span className="text-xs text-gray-400 block">
+                            Nama Komunitas
+                          </span>
+                          <CardTitle className="text-base font-bold line-clamp-1 text-gray-800 hover:text-green-600 transition-colors duration-200">
                             {community.name}
                           </CardTitle>
                         </Link>
                       </CardHeader>
-                      <CardContent className="pt-0 pb-4">
-                        <p className="text-gray-600 line-clamp-2 mb-4 text-sm leading-relaxed">
+                      <CardContent className="pb-3 px-4">
+                        <span className="text-xs text-gray-400 block">
+                          Deskripsi
+                        </span>
+                        <p className="text-gray-600 line-clamp-2 mb-3 text-xs leading-relaxed">
                           {community.description}
                         </p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <Calendar className="w-4 h-4" />
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Calendar className="w-3 h-3" />
                           <span>
                             Dibuat{" "}
                             {new Date(community.createdAt).toLocaleDateString(
@@ -265,26 +273,28 @@ export default function CommunityPage() {
                           </span>
                         </div>
                       </CardContent>
-                      <CardFooter className="flex gap-3 pt-3 border-t border-gray-100">
+                      <CardFooter className="flex gap-2 pt-2 border-t border-gray-100 px-4">
                         <Link
                           href={`/community/${community.id}`}
                           className="flex-1"
                         >
                           <Button
                             variant="outline"
-                            className="w-full rounded-full border-gray-300 hover:border-green-500 hover:text-green-600 transition-all duration-200"
+                            size="sm"
+                            className="w-full rounded-full border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-all duration-200 text-xs"
                           >
                             Lihat Detail
                           </Button>
                         </Link>
                         {!isOwner && !isMember && profile?.data && (
                           <Button
-                            className="bg-green-600 hover:bg-green-700 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 rounded-full transition-all duration-200 text-xs"
                             onClick={() => handleJoinCommunity(community.id)}
                             disabled={joinMutation.isPending}
                           >
                             {joinMutation.isPending ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 className="w-3 h-3 animate-spin" />
                             ) : (
                               "Gabung"
                             )}
@@ -292,7 +302,8 @@ export default function CommunityPage() {
                         )}
                         {!profile?.data && (
                           <Button
-                            className="bg-green-600 hover:bg-green-700 rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 rounded-full transition-all duration-200 text-xs"
                             onClick={() => (window.location.href = "/sign-in")}
                           >
                             Login
@@ -307,7 +318,8 @@ export default function CommunityPage() {
                 <div className="flex justify-center gap-3">
                   <Button
                     variant="outline"
-                    className="rounded-full px-6 hover:bg-green-50 hover:border-green-500 hover:text-green-600 transition-all duration-200"
+                    size="sm"
+                    className="rounded-full px-4 hover:bg-green-50 hover:border-green-500 hover:text-green-600 transition-all duration-200"
                     disabled={page === 1}
                     onClick={() => setPage(page - 1)}
                   >
@@ -324,9 +336,9 @@ export default function CommunityPage() {
                             variant={page === pageNum ? "default" : "outline"}
                             size="sm"
                             onClick={() => setPage(pageNum)}
-                            className={`rounded-full w-10 h-10 p-0 transition-all duration-200 ${
+                            className={`rounded-full w-8 h-8 p-0 transition-all duration-200 text-xs ${
                               page === pageNum
-                                ? "bg-green-600 hover:bg-green-700 shadow-md"
+                                ? "bg-green-600 hover:bg-green-700"
                                 : "hover:bg-green-50 hover:border-green-500 hover:text-green-600"
                             }`}
                           >
@@ -338,7 +350,8 @@ export default function CommunityPage() {
                   </div>
                   <Button
                     variant="outline"
-                    className="rounded-full px-6 hover:bg-green-50 hover:border-green-500 hover:text-green-600 transition-all duration-200"
+                    size="sm"
+                    className="rounded-full px-4 hover:bg-green-50 hover:border-green-500 hover:text-green-600 transition-all duration-200"
                     disabled={page === communities.data.totalPages}
                     onClick={() => setPage(page + 1)}
                   >

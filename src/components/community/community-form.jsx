@@ -8,16 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Upload, X, Camera, FileImage } from "lucide-react";
 import { useCreateCommunity, useUpdateCommunity } from "@/hooks/use-community";
 import Image from "next/image";
@@ -33,8 +25,8 @@ export default function CommunityForm({ community = null, onCancel }) {
   const [imageFile, setImageFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
+
   const isEditing = !!community;
-  
   const createMutation = useCreateCommunity();
   const updateMutation = useUpdateCommunity();
   const isLoading = createMutation.isPending || updateMutation.isPending;
@@ -43,8 +35,8 @@ export default function CommunityForm({ community = null, onCancel }) {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
+    setValue,
   } = useForm({
     resolver: zodResolver(communitySchema),
     defaultValues: {
@@ -54,32 +46,10 @@ export default function CommunityForm({ community = null, onCancel }) {
   });
 
   useEffect(() => {
-    if (community && isEditing) {
-      reset({
-        name: community.name,
-        description: community.description,
-      });
-      if (community.imageUrl) {
-        setImagePreview(community.imageUrl);
-      }
+    if (community?.imageUrl) {
+      setImagePreview(community.imageUrl);
     }
-  }, [community, isEditing, reset]);
-
-  const handleImageChange = (file) => {
-    if (file) {
-      setImageFile(file);
-      setValue("image", file, { shouldValidate: true });
-      const reader = new FileReader();
-      reader.onload = (e) => setImagePreview(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleFileInput = (e) => {
-    const file = e.target.files[0];
-    handleImageChange(file);
-    e.target.value = "";
-  };
+  }, [community]);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -95,18 +65,37 @@ export default function CommunityForm({ community = null, onCancel }) {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImageChange(e.dataTransfer.files[0]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      handleFileSelect(e.dataTransfer.files[0]);
     }
   };
 
+  const handleFileSelect = (file) => {
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran file maksimal 5MB");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      alert("File harus berupa gambar");
+      return;
+    }
+
+    setImageFile(file);
+    setValue("image", file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const removeImage = () => {
-    setValue("image", null, { shouldValidate: true });
-    setImagePreview(isEditing ? community?.imageUrl : null);
+    setImagePreview(null);
     setImageFile(null);
+    setValue("image", null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -116,7 +105,7 @@ export default function CommunityForm({ community = null, onCancel }) {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
-    
+
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -126,6 +115,9 @@ export default function CommunityForm({ community = null, onCancel }) {
         { id: community.id, data: formData },
         {
           onSuccess: () => {
+            reset();
+            setImagePreview(null);
+            setImageFile(null);
             onCancel?.();
           },
         }
@@ -176,7 +168,9 @@ export default function CommunityForm({ community = null, onCancel }) {
               className={errors.description ? "border-red-500" : ""}
             />
             {errors.description && (
-              <p className="text-red-500 text-sm">{errors.description.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -215,7 +209,9 @@ export default function CommunityForm({ community = null, onCancel }) {
                     <X className="h-4 w-4" />
                   </Button>
                   <div className="mt-4 text-sm text-gray-600 text-center">
-                    {isEditing ? "Klik tombol di atas untuk mengganti gambar" : "Klik tombol di atas untuk mengganti gambar"}
+                    {isEditing
+                      ? "Klik tombol di atas untuk mengganti gambar"
+                      : "Klik tombol di atas untuk mengganti gambar"}
                   </div>
                 </div>
               ) : (
@@ -243,33 +239,27 @@ export default function CommunityForm({ community = null, onCancel }) {
                 id="image"
                 type="file"
                 accept="image/*"
-                onChange={handleFileInput}
-                className="hidden"
                 ref={fileInputRef}
-              />
-              {!imagePreview && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-4 border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
-                  onClick={() =>
-                    fileInputRef.current && fileInputRef.current.click()
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleFileSelect(e.target.files[0]);
                   }
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Pilih Gambar
-                </Button>
-              )}
+                }}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {imagePreview ? "Ganti Gambar" : "Pilih Gambar"}
+              </Button>
             </div>
-            {errors.image && (
-              <p className="text-red-500 text-sm flex items-center gap-1">
-                <X className="h-3 w-3" />
-                {errors.image.message}
-              </p>
-            )}
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-3 pt-4">
             <Button
               type="submit"
               className="flex-1 bg-green-600 hover:bg-green-700"
@@ -280,8 +270,10 @@ export default function CommunityForm({ community = null, onCancel }) {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {isEditing ? "Memperbarui..." : "Membuat..."}
                 </>
+              ) : isEditing ? (
+                "Perbarui Komunitas"
               ) : (
-                isEditing ? "Perbarui Komunitas" : "Buat Komunitas"
+                "Buat Komunitas"
               )}
             </Button>
             {onCancel && (
