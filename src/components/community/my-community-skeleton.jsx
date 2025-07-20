@@ -3,23 +3,23 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function MyCommunityPageSkeleton() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen">
       {/* Hero Section Skeleton */}
       <section className="relative w-full h-screen flex flex-col">
         {/* Background Skeleton */}
         <Skeleton className="absolute inset-0 w-full h-full" />
-        
+
         {/* Content Skeleton */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 text-center">
           <Skeleton className="h-12 md:h-16 lg:h-20 w-3/4 max-w-4xl mb-4" />
           <Skeleton className="h-6 md:h-8 w-2/3 max-w-2xl mb-8" />
-          
+
           {/* Search Bar Skeleton */}
           <div className="relative max-w-md w-full mx-auto">
             <Skeleton className="h-14 w-full rounded-full" />
           </div>
         </div>
-        
+
         {/* Scroll Indicator Skeleton */}
         <div className="relative z-10 pb-8 flex justify-center">
           <Skeleton className="w-8 h-8" />
@@ -58,8 +58,8 @@ export function MyCommunityPageSkeleton() {
         {/* Communities Grid Skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, index) => (
-            <Card 
-              key={index} 
+            <Card
+              key={index}
               className="group overflow-hidden bg-white border-0 shadow-sm rounded-xl"
             >
               {/* Community Image Skeleton */}
@@ -81,10 +81,10 @@ export function MyCommunityPageSkeleton() {
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />
                 </div>
-                
+
                 {/* Date Skeleton */}
                 <Skeleton className="h-4 w-32 mb-5" />
-                
+
                 {/* Stats Skeleton */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                   <div className="flex items-center gap-3">

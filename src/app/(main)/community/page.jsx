@@ -77,7 +77,7 @@ export default function CommunityPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-gray-50">
+    <main className="w-full min-h-screen">
       <section className="relative w-full h-screen flex flex-col">
         <div className="absolute inset-0">
           <Image

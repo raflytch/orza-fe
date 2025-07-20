@@ -135,7 +135,7 @@ export default function CommunityDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-28">
+    <main className="min-h-screen py-28">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-6">
           <Link href="/community">

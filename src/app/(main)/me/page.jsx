@@ -222,7 +222,7 @@ export default function ProfilePage() {
 
   if (isLoadingProfile) {
     return (
-      <main className="min-h-screen bg-gray-50 py-24">
+      <main className="min-h-screen py-24">
         <div className="container mx-auto px-4 max-w-6xl">
           <ProfileSkeleton />
         </div>

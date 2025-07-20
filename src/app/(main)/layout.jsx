@@ -1,3 +1,4 @@
+import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import QueryProvider from "@/providers/query-provider";
 import ReduxProvider from "@/providers/redux-provider";
@@ -14,6 +15,7 @@ export default function MainLayout({ children }) {
           <QueryProvider>
             <Navbar />
             {children}
+            <Footer />
           </QueryProvider>
         </ReduxProvider>
       </div>

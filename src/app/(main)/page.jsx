@@ -3,7 +3,7 @@ import HeroSectionTwo from "@/components/homepage/hero-section-two";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen py-16">
       <HeroSectionTwo />
       <HeroSectionThree />
     </main>

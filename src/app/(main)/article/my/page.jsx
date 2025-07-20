@@ -77,7 +77,7 @@ export default function MyArticlesPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen">
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="text-center">
             <p className="text-red-600 text-lg font-semibold mb-2">
@@ -91,7 +91,7 @@ export default function MyArticlesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen">
       <section className="relative w-full h-[60vh] sm:h-[70vh] lg:h-screen flex flex-col">
         <div className="absolute inset-0">
           <Image
