@@ -65,7 +65,7 @@ export default function HeroSectionTwo() {
             <div className="p-2 sm:p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl">
               <FaRobot className="text-white h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
             </div>
-            <h2 className="text-xl sm:text-3xl md:text-4xl font-black">
+            <h2 className="text-lg sm:text-3xl md:text-4xl font-black">
               <span className="bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 bg-clip-text text-transparent">
                 AI Detection
               </span>{" "}
