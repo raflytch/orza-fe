@@ -3,14 +3,14 @@ import Image from "next/image";
 
 export default function AuthBanner() {
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      <div className="absolute inset-0">
+    <div className="relative min-h-screen h-full w-full overflow-hidden flex">
+      <div className="absolute inset-0 h-full w-full">
         <Image
           src={images.imageHero2}
           alt="Orza Agriculture Technology"
           fill
-          sizes="50vw"
-          className="object-cover object-center w-full h-full"
+          sizes="100vw"
+          className="object-cover object-center"
           priority
           quality={100}
         />
