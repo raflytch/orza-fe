@@ -91,7 +91,7 @@ export default function HeroSectionTwo() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
-              { label: "Akurasi AI", value: "95%", color: "text-green-600" },
+              { label: "Akurasi AI", value: "98%", color: "text-green-600" },
               { label: "Waktu Deteksi", value: "<3s", color: "text-blue-600" },
               {
                 label: "Jenis Tanaman",
