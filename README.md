@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`].(https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Orza Frontend
 
-## Getting Started
+Orza adalah sebuah platform agriteknologi terpadu yang dirancang untuk memberdayakan petani dan masyarakat umum, sekaligus berkontribusi aktif terhadap pencapaian beberapa Tujuan Pembangunan Berkelanjutan (SDGs).
 
-First, run the development server:
+## Tentang Orza
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Orza menyediakan alat deteksi dini penyakit tanaman berbasis kecerdasan buatan (AI). Pengguna cukup mengunggah foto daun, dan sistem AI akan menganalisis serta mengidentifikasi penyakit secara cepat. Fungsi inti ini mendukung SDG 2: Tanpa Kelaparan (Zero Hunger) dengan membantu petani mencegah gagal panen dan meningkatkan produktivitas lahan.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Lebih dari sekadar alat deteksi, Orza adalah ekosistem pertanian berkelanjutan. Setelah penyakit teridentifikasi, platform memberikan rekomendasi solusi dan saran penanganan yang ramah lingkungan, mendukung SDG 12: Konsumsi dan Produksi yang Bertanggung Jawab serta SDG 15: Ekosistem Daratan.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Orza juga membangun ruang komunitas digital untuk petani agar dapat saling terhubung, berbagi pengalaman, dan berdiskusi, mewujudkan SDG 17: Kemitraan untuk Mencapai Tujuan. Fitur artikel memungkinkan pengguna membaca dan berbagi wawasan, mendukung SDG 4: Pendidikan Berkualitas.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+- **Framework:** [Next.js](https://nextjs.org)
+- **State Management:** Redux Toolkit, React Query
+- **Styling:** Tailwind CSS
+- **Form Validation:** React Hook Form, Zod
+- **UI Components:** Radix UI, Lucide React, React Icons
+- **Notifications:** Sonner
+- **Image Handling:** Next/Image
+- **Authentication:** JWT, cookies-next
+- **Other:** Axios, React Markdown, Remark GFM
 
-To learn more about Next.js, take a look at the following resources:
+## Instalasi & Menjalankan Proyek
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone repository:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   git clone https://github.com/raflytch/orza-fe
+   cd orza-fe
+   ```
 
-## Deploy on Vercel
+2. **Install dependencies:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm install
+   # atau
+   yarn install
+   # atau
+   pnpm install
+   # atau
+   bun install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Jalankan server pengembangan:**
+
+   ```bash
+   npm run dev
+   # atau
+   yarn dev
+   # atau
+   pnpm dev
+   # atau
+   bun dev
+   ```
+
+4. **Buka aplikasi di browser:**
+   [http://localhost:3000](http://localhost:3000)
+
+## Struktur Fitur Utama
+
+- **Deteksi Penyakit Tanaman:** Upload foto daun, analisis AI, rekomendasi solusi.
+- **Komunitas Petani:** Forum diskusi, berbagi pengalaman, kolaborasi.
+- **Artikel Edukasi:** Baca dan bagikan pengetahuan seputar agritech.
+- **Riwayat Prediksi:** Lihat hasil analisis sebelumnya.
+- **Dashboard Statistik:** Statistik penggunaan dan hasil deteksi.
+
+## Kontribusi
+
+Kontribusi sangat terbuka! Silakan fork, buat pull request, atau laporkan isu di [GitHub](https://github.com/yourusername/orza-fe).
+
+---
+
+Orza – Platform Agritech untuk pertanian berkelanjutan dan komunitas petani Indonesia.
