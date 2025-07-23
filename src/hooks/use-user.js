@@ -85,6 +85,6 @@ export const useGetLikedPosts = (limit = 10) => {
       const { page, totalPages } = lastPage.data;
       return page < totalPages ? page + 1 : undefined;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };

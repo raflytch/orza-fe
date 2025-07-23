@@ -49,6 +49,7 @@ import {
   Eye,
   EyeOff,
   UserCheck,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -90,6 +91,9 @@ export default function ProfilePage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch: refetchLikedPosts,
+    isLoading: isLoadingLikedPosts,
+    isRefetching: isRefetchingLikedPosts,
   } = useGetLikedPosts();
   const updateProfileMutation = useUpdateUserProfile();
   const requestDeleteMutation = useRequestDeleteAccount();
@@ -258,7 +262,6 @@ export default function ProfilePage() {
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-600/80 via-green-500/60 to-green-400/80"></div>
                   </div>
                   <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
                     <div className="relative">
@@ -343,8 +346,8 @@ export default function ProfilePage() {
             <BlurFade delay={0.3}>
               <Card className="border border-green-200 bg-white/90 py-0">
                 <Tabs defaultValue="liked" className="w-full">
-                  <div className="border-b border-green-100">
-                    <TabsList className="grid w-full grid-cols-1 bg-transparent p-1">
+                  <div className="border-b border-green-100 flex items-center justify-between px-2 py-2">
+                    <TabsList className="grid w-full grid-cols-1 bg-transparent">
                       <TabsTrigger
                         value="liked"
                         className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white"
@@ -353,11 +356,29 @@ export default function ProfilePage() {
                         Liked Posts
                       </TabsTrigger>
                     </TabsList>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-2 flex items-center gap-2 border-green-200 hover:border-green-400 hover:bg-green-50 transition-all"
+                      onClick={() => refetchLikedPosts()}
+                      disabled={isRefetchingLikedPosts || isLoadingLikedPosts}
+                    >
+                      <RefreshCw
+                        className={`w-4 h-4 ${
+                          isRefetchingLikedPosts ? "animate-spin" : ""
+                        }`}
+                      />
+                      Refresh
+                    </Button>
                   </div>
 
                   <TabsContent value="liked" className="p-6">
                     <div className="space-y-4">
-                      {allLikedPosts.length > 0 ? (
+                      {isLoadingLikedPosts || isRefetchingLikedPosts ? (
+                        <div className="flex justify-center py-12">
+                          <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                        </div>
+                      ) : allLikedPosts.length > 0 ? (
                         <>
                           {allLikedPosts.map((post) => (
                             <div

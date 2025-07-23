@@ -10,7 +10,7 @@ export function ProfileSkeleton() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4">
-          <Card className="border border-green-200 bg-gradient-to-br from-white to-green-50/50">
+          <Card className="border border-green-200 bg-gradient-to-br from-white to-green-50/50 py-0">
             <div className="relative">
               <Skeleton className="h-32 w-full bg-green-200" />
               <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
