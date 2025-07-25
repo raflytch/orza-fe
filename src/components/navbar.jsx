@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FaLeaf,
   FaUsers,
@@ -40,6 +40,7 @@ import NotificationPanel from "@/components/notification-panel";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [token, setToken] = useState(null);
@@ -64,6 +65,15 @@ export default function Navbar() {
       clearInterval(interval);
     };
   }, [profile, refetchProfile, isLoading]);
+
+  useEffect(() => {
+    if (
+      (pathname === "/predict" || pathname === "/community") &&
+      !getCookie("token")
+    ) {
+      router.replace("/sign-in");
+    }
+  }, [pathname, router]);
 
   if (pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/otp")
     return null;
@@ -137,6 +147,12 @@ export default function Navbar() {
         <Link
           href="/predict"
           className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-200 hover:text-green-600 transition-colors px-3 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20"
+          onClick={(e) => {
+            if (!token) {
+              e.preventDefault();
+              router.replace("/sign-in");
+            }
+          }}
         >
           <FaLeaf className="text-green-500" />
           Prediksi
@@ -144,6 +160,12 @@ export default function Navbar() {
         <Link
           href="/community"
           className="flex items-center gap-2 font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+          onClick={(e) => {
+            if (!token) {
+              e.preventDefault();
+              router.replace("/sign-in");
+            }
+          }}
         >
           <FaUsers className="text-blue-500" />
           Komunitas
@@ -265,7 +287,14 @@ export default function Navbar() {
               <Link
                 href="/predict"
                 className="flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200 hover:text-green-600 transition-colors px-4 py-3 rounded-xl text-lg hover:bg-green-50 dark:hover:bg-green-900/20"
-                onClick={() => setOpen(false)}
+                onClick={(e) => {
+                  if (!token) {
+                    e.preventDefault();
+                    router.replace("/sign-in");
+                  } else {
+                    setOpen(false);
+                  }
+                }}
               >
                 <FaLeaf className="text-green-500" />
                 Prediksi
@@ -273,7 +302,14 @@ export default function Navbar() {
               <Link
                 href="/community"
                 className="flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors px-4 py-3 rounded-xl text-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                onClick={() => setOpen(false)}
+                onClick={(e) => {
+                  if (!token) {
+                    e.preventDefault();
+                    router.replace("/sign-in");
+                  } else {
+                    setOpen(false);
+                  }
+                }}
               >
                 <FaUsers className="text-blue-500" />
                 Komunitas
