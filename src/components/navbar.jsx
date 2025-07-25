@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { usePathname, useRouter } from "next/navigation";
 import {
   FaLeaf,
   FaUsers,
@@ -41,7 +40,6 @@ import NotificationPanel from "@/components/notification-panel";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
